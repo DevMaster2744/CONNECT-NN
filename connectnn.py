@@ -22,12 +22,13 @@ def activationFunctionFromEnum(x: float, activationFunctionType: activationFunct
 
 class unit():
     def __init__(self, inputSize: int, activationFunctionType: activationFunction) -> None:
+        
         self.heights = [uniform(-1,1) for _ in range(inputSize)]
-        self.activationFunctionType == activationFunctionType
+        self.activationFunctionType = activationFunctionType
 
 class layer():
-    def __init__(self, layerSize: int, activationFunctionType: activationFunction) -> None:
-        pass
+    def __init__(self, inputSize: int, layerSize: int, activationFunctionType: activationFunction) -> None:
+        self.units = [unit(inputSize=inputSize, activationFunctionType=activationFunctionType) for _ in range(layerSize)]
 
 
 class NeuralNetwork():
@@ -36,5 +37,5 @@ class NeuralNetwork():
         self.layers = []
 
     def addLayer(self, layerSize: int, layerType: activationFunction):
-        self.layers.append(layer())
+        self.layers.append(layer(self.initialInputSize, layerSize, layerType))
         
