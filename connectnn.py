@@ -71,7 +71,6 @@ class NeuralNetwork():
         result = inputs
         for i, layer in enumerate(self.layers):
             result = layer.run(result)
-            print(result)
         
         return result
 
