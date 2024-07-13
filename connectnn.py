@@ -29,9 +29,7 @@ class unit():
     def run(self, inputs: tuple) -> float:
         self.inputs = inputs
 
-        dot = np.dot(inputs, self.heights)
-        
-        result = np.sum(dot)
+        result = np.dot(inputs, self.heights)
 
         result = activationFunctionFromEnum(result, self.activationFunctionType)
         return result
