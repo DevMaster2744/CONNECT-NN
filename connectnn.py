@@ -8,7 +8,7 @@ class activationFunction(Enum):
     BINARY = 2
     TANH = 3
 
-def activationFunctionFromEnum(x: float, activationFunctionType: activationFunction) -> float:
+def activationFunctionFromEnum(x: int, activationFunctionType: activationFunction) -> float:
     if activationFunctionType == activationFunction.SIGMOID:
         return 1 / (1 + np.exp(-x))
     
