@@ -10,6 +10,7 @@ Connect NN can make custom neural networks, and basic activation functions that 
 First, we have to understand how the ANN works:
 
 ```mermaid
+%%{init: {"flowchart": {"defaultRenderer": "elk"}} }%%
 	graph LR
 	
     A((Input 1)) --> C((Neuron))
