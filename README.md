@@ -54,3 +54,23 @@ This graph can be very confusing, here is a "simplification" of this diagram:
 The neuron “thinks” because it carries out a process called **dot**, which multiplies the values ​​in the tables and adds them together. For example, I have two arrays: [1,2,3] and [3,2,1], so I want to apply the **dot** method, the result will be 10, because (1 * 3) + (2 * 2) + (3 * 1) = (3) + (4) + (3) = 3 + 4 + 3 = 10. For dot works, we need to multiply the neuron's inputs by the weight, that is the "memory" of the neuron. We need to use the **dot** method with this two arrays, and we will have the **linear function's output**.
 
 To obtain the final output, the output of the linear function will go through an **activation function**, which will transform it into a readable output, and finaly the ***neuron's output***.
+
+## Weights
+
+For data processing, ANN neurons must have a weight for each input, to apply the dot (which I showed above). The weight must be random, for more efficiency and diverse outputs. See it in the diagram below:
+
+```mermaid
+%%{init: {"flowchart": {"defaultRenderer": "elk"}} }%%
+	flowchart LR
+		In((Input 1))
+		In2((Input 2))
+		subgraph Neuron
+		Sum("∑")
+		Ac(("f(x)"))
+		We{Weight}
+		end
+		Out((Output))
+		In & In2 & We --> Sum --> Ac --> Out
+```
+
+The weight is proportional to the dimension of the inputs, so if you give the AI the array [1,2,3], the weight should have three numbers inside it, such as [1,7756342, 2,837438758, -1,3893475637].
