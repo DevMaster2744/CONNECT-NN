@@ -1,10 +1,13 @@
 from typing import Mapping
 import connectnn as cn
 import matplotlib.pyplot as plt
+import matplotlib
 from threading import Thread
 import json
 from random import randint
 from time import sleep as wait
+
+matplotlib.use("TkAgg")
 
 points_id = [0]
 points = [0]
