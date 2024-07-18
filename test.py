@@ -1,11 +1,12 @@
 from typing import Mapping
 import connectnn as cn
-import matplotlib.pyplot as plt
 import matplotlib
+import matplotlib.pyplot as plt
 from threading import Thread
 import json
 from random import randint
 from time import sleep as wait
+import numpy as np
 
 matplotlib.use("TkAgg")
 
@@ -16,12 +17,10 @@ def setup_nn():
     print("Setup of ANN - Connect-NN")
     nn = cn.NeuralNetwork(1)
 
-    at = cn.activationFunction
-
-    nn.addLayer(170, at.TANH)
-    nn.addLayer(50,  at.TANH)
-    nn.addLayer(15, at.TANH)
-    nn.addLayer(1, at.SIGMOID)
+    nn.addLayer(170, cn.activationFunction.SIGMOID)
+    nn.addLayer(50,  cn.activationFunction.SIGMOID)
+    nn.addLayer(15, cn.activationFunction.SIGMOID)
+    nn.addLayer(1, cn.activationFunction.SIGMOID)
 
     print("ANN - CONNECT-NN SETUP FINISHED")
 
@@ -47,14 +46,15 @@ def decode_str(str_: str):
     _str = ""
     for chr in str_:
         _str += str(ord(chr)) + "0"
-    return int(_str) / (len(_str) * 10)
+    return np.float128(_str)
 
 def CONNECT_ANN_Run():
     for i in range(1500):
         print(f"Time: {i + 1}")
         phrase, bad, id = select_random_train_data(train_data)
 
-        out = round(CONNECT_ANN.run([decode_str(phrase)])[0], 3)
+        decoded = decode_str(phrase)
+        out = round(CONNECT_ANN.run([np.float128(decoded / ((len(str(decoded)) * 10) - 1))])[0], 3)
         if (out > 0.5) == bad:
             points_id.append(points_id[-1] + 1)
             points.append(points[-1] + 1)
@@ -65,9 +65,10 @@ def CONNECT_ANN_Run():
             while True:
                 phrase, bad, id = select_random_train_data(train_data)
 
-                out = round(CONNECT_ANN.run([decode_str(phrase)])[0], 3)
+                decoded = decode_str(phrase)
+                out = round(CONNECT_ANN.run([np.float128(decoded / ((len(str(decoded)) * 10) - 1))])[0], 3)
                 if (out > 0.5) == bad:
-                    print("Finished train")
+                    print("Finished train" + f" out: {out}")
                     break
                 else:
                     CONNECT_ANN.fit(-((0.501 if bad else 0.499) - out), 0.01)
@@ -78,6 +79,7 @@ Thread(target=CONNECT_ANN_Run).start()
 while True:
     inp = input()
     if inp.lower() == "graph":
+        print("Show graph")
         plt.plot(points_id, points)
         plt.xlabel("Runs")
         plt.ylabel("Points")

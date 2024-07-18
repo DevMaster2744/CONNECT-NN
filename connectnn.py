@@ -8,16 +8,16 @@ class activationFunction(Enum):
     BINARY = 2
     TANH = 3
 
-def activationFunctionFromEnum(x: int, activationFunctionType: activationFunction) -> float:
+def activationFunctionFromEnum(x: np.float128, activationFunctionType: activationFunction) -> float:
     if activationFunctionType == activationFunction.SIGMOID:
-        return 1 / (1 + np.exp(-x))
+        return np.float128(1 / (1 + np.exp(-x, dtype=np.float128)))
     
     if activationFunctionType == activationFunction.TANH:
-        th = (np.exp(x) - np.exp(-x)) / (np.exp(x) + np.exp(-x))
+        th = (np.float128(np.exp(x, dtype=np.float128) - np.exp(-x, dtype=np.float128)) / (np.exp(x, dtype=np.float128) + np.exp(-x, dtype=np.float128)))
         return th
     
     if activationFunctionType == activationFunction.BINARY:
-        return 1 if (1 / (1 + np.exp(-x)) > 0.5) else 0
+        return 1 if (1 / (1 + np.exp(-x, dtype=np.float128)) > 0.5) else 0
 
 
 class unit():
@@ -36,7 +36,7 @@ class unit():
 
     def fit(self, error: float, alpha: float):
         for i in range(len(self.heights)):
-            self.heights[i] +=  activationFunctionFromEnum(self.inputs[i], activationFunction.TANH) * error * alpha
+            self.heights[i] +=  activationFunctionFromEnum(self.inputs[i], self.activationFunctionType) * error * alpha
     '''def setInputSize(self, inputSize: int):
         self.inp'''
 
