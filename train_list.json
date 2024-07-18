@@ -1,0 +1,36 @@
+{
+    "phrases": [
+        {"phrase": "seu negro burro", "isBad": true},
+        {"phrase": "negao", "isBad": true},
+        {"phrase": "morre seu nego!", "isBad": true},
+        {"phrase": "aquele negro e bem burro.", "isBad": true},
+        {"phrase": "vai pra favela nego!", "isBad": true},
+        {"phrase": "seu negro burro", "isBad": true},
+        {"phrase": "seu negro estupido", "isBad": true},
+        {"phrase": "aql neegao e mt estupido", "isBad": true},
+        {"phrase": "nega gostosa", "isBad": true},
+        {"phrase": "vai tomar no cu nego", "isBad": true},
+
+        {"phrase": "cara, tu e viado?", "isBad": true},
+        {"phrase": "o cara e gay", "isBad": true},
+        {"phrase": "bora mata os gays", "isBad": true},
+        {"phrase": "olha ai a lesbica", "isBad": true},
+        {"phrase": "ai, eu sou homo... ksksksksksksksksk", "isBad": true},
+
+        {"phrase": "como q vai?", "isBad": false},
+        {"phrase": "tudo bem ai?", "isBad": false},
+        {"phrase": "bora la mano", "isBad": false},
+        {"phrase": "tem que matar os bicho da ilha da selva", "isBad": false},
+        {"phrase": "bora jogar!", "isBad": false},
+        {"phrase": "cara, to com medo do boss", "isBad": false},
+        {"phrase": "meu deus...", "isBad": false},
+        {"phrase": "aql cara e muito preconceituoso, bora denunciar pra connect-nn", "isBad": false},
+        {"phrase": "acho q vai ser dificil fazer o trabalho de mat", "isBad": false},
+        {"phrase": "uh, q q tem q fazer la?", "isBad": false},
+        {"phrase": "os man tão incomodando pra caramba", "isBad": false},
+        {"phrase": "q?", "isBad": false},
+        {"phrase": "tenha paciencia...", "isBad": false},
+        {"phrase": "tenha paciencia..", "isBad": false},
+        {"phrase": "n tem mt o q fazer", "isBad": false}
+    ]
+}
