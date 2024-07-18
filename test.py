@@ -18,8 +18,8 @@ def setup_nn():
     nn = cn.NeuralNetwork(1)
 
     nn.addLayer(170, cn.activationFunction.SIGMOID)
-    nn.addLayer(50,  cn.activationFunction.SIGMOID)
-    nn.addLayer(15, cn.activationFunction.SIGMOID)
+    nn.addLayer(50,  cn.activationFunction.TANH)
+    nn.addLayer(15, cn.activationFunction.TANH)
     nn.addLayer(1, cn.activationFunction.SIGMOID)
 
     print("ANN - CONNECT-NN SETUP FINISHED")
@@ -83,5 +83,5 @@ while True:
         plt.plot(points_id, points)
         plt.xlabel("Runs")
         plt.ylabel("Points")
-        plt.show
+        plt.show()
         wait(1)
