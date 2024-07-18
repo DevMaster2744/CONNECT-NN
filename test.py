@@ -5,9 +5,10 @@ import matplotlib.pyplot as plt
 from threading import Thread
 import json
 from random import randint
+from random import uniform
 from time import sleep as wait
 import numpy as np
-
+import random
 matplotlib.use("TkAgg")
 
 points_id = [0]
@@ -70,8 +71,11 @@ def CONNECT_ANN_Run():
                 if (out > 0.5) == bad:
                     print("Finished train" + f" out: {out}")
                     break
+                elif out > 0.6:
+                    CONNECT_ANN.fit(0.501 - out, 0.1)
                 else:
-                    CONNECT_ANN.fit(-((0.501 if bad else 0.499) - out), 0.01)
+                    #CONNECT_ANN.fit((uniform(0.501, 0.539) - out if bad else out - uniform(0.460, 0.5)), 0.01)
+                    CONNECT_ANN.fit((uniform(0.501, 0.539) - out if bad else -(out - uniform(0.460, 0.5))), 0.01)
                 wait(0.01)
 
 Thread(target=CONNECT_ANN_Run).start()
