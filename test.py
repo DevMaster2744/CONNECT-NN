@@ -11,23 +11,10 @@ import numpy as np
 import random
 matplotlib.use("TkAgg")
 
-points_id = [0]
-points = [0]
+points = []
 
-def setup_nn():
-    print("Setup of ANN - Connect-NN")
-    nn = cn.NeuralNetwork(1)
-
-    nn.addLayer(170, cn.activationFunction.SIGMOID)
-    nn.addLayer(50,  cn.activationFunction.TANH)
-    nn.addLayer(15, cn.activationFunction.TANH)
-    nn.addLayer(1, cn.activationFunction.SIGMOID)
-
-    print("ANN - CONNECT-NN SETUP FINISHED")
-
-    return nn
-
-CONNECT_ANN = setup_nn()
+nns = 0
+points_graph_list = []
 
 def read_train_data():
     print("Reading TRAIN_DATA.JSON")
@@ -50,6 +37,24 @@ def decode_str(str_: str):
     return np.float128(_str)
 
 def CONNECT_ANN_Run():
+    global nns
+
+    print("Setup of ANN - Connect-NN")
+    nn = cn.NeuralNetwork(1)
+
+    nn.addLayer(170, cn.activationFunction.SIGMOID)
+    nn.addLayer(50,  cn.activationFunction.TANH)
+    nn.addLayer(15, cn.activationFunction.TANH)
+    nn.addLayer(1, cn.activationFunction.SIGMOID)
+
+    print("ANN - CONNECT-NN SETUP FINISHED")
+
+    nns += 1
+    ann_nid = nns
+    CONNECT_ANN = nn
+    
+    points.append({"id": ann_nid, "points_list": [0], "points_id": [0]})
+
     for i in range(1500):
         print(f"Time: {i + 1}")
         phrase, bad, id = select_random_train_data(train_data)
@@ -57,11 +62,11 @@ def CONNECT_ANN_Run():
         decoded = decode_str(phrase)
         out = round(CONNECT_ANN.run([np.float128(decoded / ((len(str(decoded)) * 10) - 1))])[0], 3)
         if (out > 0.5) == bad:
-            points_id.append(points_id[-1] + 1)
-            points.append(points[-1] + 1)
+            points[ann_nid - 1]["points_id"].append(points[ann_nid - 1]["points_id"][-1] + 1)
+            points[ann_nid - 1]["points_list"].append(points[ann_nid - 1]["points_list"][-1] + 1)
         else:
-            points_id.append(points_id[-1] + 1)
-            points.append(points[-1] - 1)
+            points[ann_nid - 1]["points_id"].append(points[ann_nid - 1]["points_id"][-1] + 1)
+            points[ann_nid - 1]["points_list"].append(points[ann_nid - 1]["points_list"][-1] - 1)
             print("Started to train")
             while True:
                 phrase, bad, id = select_random_train_data(train_data)
@@ -81,13 +86,18 @@ def CONNECT_ANN_Run():
                 wait(0.01)
 
 Thread(target=CONNECT_ANN_Run).start()
+Thread(target=CONNECT_ANN_Run).start()
+Thread(target=CONNECT_ANN_Run).start()
 
 while True:
     inp = input()
     if inp.lower() == "graph":
         print("Show graph")
-        plt.plot(points_id, points)
+        for _result_list in points:
+            plt.plot(_result_list["points_id"], _result_list["points_list"], label = f"ANN {_result_list['id']}")
         plt.xlabel("Runs")
         plt.ylabel("Points")
+        plt.title("ANN Result List")
+        plt.legend()
         plt.show()
         wait(1)
