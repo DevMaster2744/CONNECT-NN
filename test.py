@@ -71,8 +71,10 @@ def CONNECT_ANN_Run():
                 if (out > 0.5) == bad:
                     print("Finished train" + f" out: {out}")
                     break
-                elif out > 0.6:
+                elif out < 0.3:
                     CONNECT_ANN.fit(0.501 - out, 0.1)
+                elif out > 0.6:
+                    CONNECT_ANN.fit(out - 0.499, 0.1)
                 else:
                     #CONNECT_ANN.fit((uniform(0.501, 0.539) - out if bad else out - uniform(0.460, 0.5)), 0.01)
                     CONNECT_ANN.fit((uniform(0.501, 0.539) - out if bad else -(out - uniform(0.460, 0.5))), 0.01)
