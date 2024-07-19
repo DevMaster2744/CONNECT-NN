@@ -17,6 +17,7 @@ points = []
 results = []
 
 nns = 0
+finished_nns = 0
 points_graph_list = []
 
 def read_train_data():
@@ -35,95 +36,107 @@ def select_random_train_data(_train_data):
 
 def decode_str(str_: str):
     _str = ""
-    for chr in str_:
-        _str += str(ord(chr)) + "0"
+    for wrd in str_:
+        for chr in wrd:
+            _str += str(ord(chr)) + "0"
+        _str += str(ord(chr)) + "00"
     return np.longdouble(_str)
 
 print("How many times the ANN must train?")
-inp = int(input())
+tinp = int(input())
 
-def CONNECT_ANN_Run():
-    global nns
-    global inp
+class CONNECT_ANN():
+    def __init__(self) -> None:
+        self.CONNECT_ANN = cn.NeuralNetwork(1)
 
-    print("Setup of ANN - Connect-NN")
-    nn = cn.NeuralNetwork(1)
+        self.CONNECT_ANN.addLayer(170, cn.activationFunction.SIGMOID)
+        self.CONNECT_ANN.addLayer(50,  cn.activationFunction.TANH)
+        self.CONNECT_ANN.addLayer(15, cn.activationFunction.TANH)
+        self.CONNECT_ANN.addLayer(1, cn.activationFunction.SIGMOID)
 
-    nn.addLayer(170, cn.activationFunction.SIGMOID)
-    nn.addLayer(50,  cn.activationFunction.TANH)
-    nn.addLayer(15, cn.activationFunction.TANH)
-    nn.addLayer(1, cn.activationFunction.SIGMOID)
+    def run(self):
+        global points
+        global finished_nns
+        global nns
+        global tinp
 
-    print("ANN - CONNECT-NN SETUP FINISHED")
+        print("Setup of ANN - Connect-NN")
+        print("ANN - CONNECT-NN SETUP FINISHED")
 
-    nns += 1
-    ann_nid = nns
-    CONNECT_ANN = nn
+        nns += 1
+        ann_nid = nns
+        
+        points.append({"id": ann_nid, "points_list": [0], "points_id": [0]})
+
+        for i in range(tinp):
+            print(f"Time: {i + 1}")
+            phrase, bad, id = select_random_train_data(train_data)
+
+            decoded = decode_str(phrase)
+            out = round(self.CONNECT_ANN.run([np.longdouble(decoded / ((len(str(decoded)) * 10) - 1))])[0], 3)
+            if (out > 0.5) == bad:
+                points[ann_nid - 1]["points_id"].append(points[ann_nid - 1]["points_id"][-1] + 1)
+                points[ann_nid - 1]["points_list"].append(points[ann_nid - 1]["points_list"][-1] + 1)
+                self.CONNECT_ANN.fit((0.501 if bad else 0.5) - out, 0.01)
+            else:
+                self.CONNECT_ANN.fit((0.501 if bad else 0.5) - out, 0.01)
+                points[ann_nid - 1]["points_id"].append(points[ann_nid - 1]["points_id"][-1] + 1)
+                points[ann_nid - 1]["points_list"].append(points[ann_nid - 1]["points_list"][-1] - 1)
+                print("Started to train")
+                while True:
+                    phrase, bad, id = select_random_train_data(train_data)
+
+                    decoded = decode_str(phrase)
+                    out = round(self.CONNECT_ANN.run([np.longdouble(decoded / ((len(str(decoded)) * 10) - 1))])[0], 3)
+                    if (out > 0.5) == bad:
+                        print("Finished train" + f" out: {out}")
+                        break
+                    elif out < 0.3:
+                        self.CONNECT_ANN.fit((0.501 if bad else 0.5) - out, 0.1)
+                    elif out > 0.6:
+                        self.CONNECT_ANN.fit((0.501 if bad else 0.5) - out, 0.1)
+                    else:
+                        #CONNECT_ANN.fit((uniform(0.501, 0.539) - out if bad else out - uniform(0.460, 0.5)), 0.01)
+                        self.CONNECT_ANN.fit((0.501 if bad else 0.5) - out, 0.01)
+                    wait(0.01)
+        finished_nns += 1
     
-    points.append({"id": ann_nid, "points_list": [0], "points_id": [0]})
+    def talk(self, _str):
+        decoded = decode_str(_str)
+        out = round(self.CONNECT_ANN.run([np.longdouble(decoded / ((len(str(decoded)) * 10) - 1))])[0], 3)
+        print("ALERT!" if (out > 0.5) else "OK")
+        return out > 0.5
+    
+def compare(x):
+    return x["points_list"][-1]
 
-    for i in range(inp):
-        print(f"Time: {i + 1}")
-        phrase, bad, id = select_random_train_data(train_data)
+print("How many Threads you want? - DANGER! - THIS VALUE CAN CRASH THE PROGRAM")
+maxn = int(input())
 
-        decoded = decode_str(phrase)
-        out = round(CONNECT_ANN.run([np.longdouble(decoded / ((len(str(decoded)) * 10) - 1))])[0], 3)
-        if (out > 0.5) == bad:
-            points[ann_nid - 1]["points_id"].append(points[ann_nid - 1]["points_id"][-1] + 1)
-            points[ann_nid - 1]["points_list"].append(points[ann_nid - 1]["points_list"][-1] + 1)
-            CONNECT_ANN.fit((0.501 if bad else 0.5) - out, 0.01)
-        else:
-            CONNECT_ANN.fit((0.501 if bad else 0.5) - out, 0.01)
-            points[ann_nid - 1]["points_id"].append(points[ann_nid - 1]["points_id"][-1] + 1)
-            points[ann_nid - 1]["points_list"].append(points[ann_nid - 1]["points_list"][-1] - 1)
-            print("Started to train")
-            while True:
-                phrase, bad, id = select_random_train_data(train_data)
+anns = []
 
-                decoded = decode_str(phrase)
-                out = round(CONNECT_ANN.run([np.longdouble(decoded / ((len(str(decoded)) * 10) - 1))])[0], 3)
-                if (out > 0.5) == bad:
-                    print("Finished train" + f" out: {out}")
-                    break
-                elif out < 0.3:
-                    CONNECT_ANN.fit((0.501 if bad else 0.5) - out, 0.1)
-                elif out > 0.6:
-                    CONNECT_ANN.fit((0.501 if bad else 0.5) - out, 0.1)
-                else:
-                    #CONNECT_ANN.fit((uniform(0.501, 0.539) - out if bad else out - uniform(0.460, 0.5)), 0.01)
-                    CONNECT_ANN.fit((0.501 if bad else 0.5) - out, 0.01)
-                wait(0.01)
-    results.append(points[ann_nid - 1]["points_list"][-1])
-    while True:
-        inp = input()
+for _ in range(maxn) :
+    anns.append({"ann": CONNECT_ANN(), "id": _ + 1})
+    Thread(target=anns[-1]["ann"].run).start()
 
-        if int(inp.split("#")[0]) == ann_nid:
-            decoded = decode_str(inp.split("#")[1])
-            out = round(CONNECT_ANN.run([np.longdouble(decoded / ((len(str(decoded)) * 10) - 1))])[0], 3)
+while finished_nns < maxn:
+    wait(0.1)
 
-        print(f"Result: {str(out > 0.5)}")
+for _result_list in points:
+    plt.plot(_result_list["points_id"], _result_list["points_list"], label = f"ANN {_result_list['id']}")
+plt.xlabel("Runs")
+plt.ylabel("Points")
+plt.title("ANN Result List")
+plt.legend()
+plt.show()
 
-def compare(x, y):
-    if y > x:
-        return True
-    return False
+points.sort(key=compare)
 
-Thread(target=CONNECT_ANN_Run).start()
-Thread(target=CONNECT_ANN_Run).start()
-Thread(target=CONNECT_ANN_Run).start()
+print(f"Best network: {points[-1]['id']}")
 
-while True:
-    if len(results) >= 3:
-        print("Show graph")
-        for _result_list in points:
-            plt.plot(_result_list["points_id"], _result_list["points_list"], label = f"ANN {_result_list['id']}")
-        plt.xlabel("Runs")
-        plt.ylabel("Points")
-        plt.title("ANN Result List")
-        plt.legend()
-        plt.show()
-        wait(0.5)
-           
+print("Talk with the ANN")
 
-
-    wait(0.5)
+for _ in range(6):
+    inps = input()
+    anns[points[-1]['id'] - 1]["ann"].talk(inps)
+    print(f"{5 - _} remain")
