@@ -9,6 +9,8 @@ from random import uniform
 from time import sleep as wait
 import numpy as np
 import random
+import unidecode
+
 matplotlib.use("TkAgg")
 
 points = []
@@ -29,7 +31,7 @@ def select_random_train_data(_train_data):
     rand_int = randint(0, phrases_len - 1)
 
     data = _train_data["phrases"][rand_int]
-    return data["phrase"], data["isBad"], rand_int
+    return unidecode.unidecode(data["phrase"]), data["isBad"], rand_int
 
 def decode_str(str_: str):
     _str = ""
@@ -37,8 +39,12 @@ def decode_str(str_: str):
         _str += str(ord(chr)) + "0"
     return np.longdouble(_str)
 
+print("How many times the ANN must train?")
+inp = int(input())
+
 def CONNECT_ANN_Run():
     global nns
+    global inp
 
     print("Setup of ANN - Connect-NN")
     nn = cn.NeuralNetwork(1)
@@ -56,7 +62,7 @@ def CONNECT_ANN_Run():
     
     points.append({"id": ann_nid, "points_list": [0], "points_id": [0]})
 
-    for i in range(1500):
+    for i in range(inp):
         print(f"Time: {i + 1}")
         phrase, bad, id = select_random_train_data(train_data)
 
