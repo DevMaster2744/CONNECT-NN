@@ -12,6 +12,7 @@ import random
 matplotlib.use("TkAgg")
 
 points = []
+results = []
 
 nns = 0
 points_graph_list = []
@@ -64,7 +65,9 @@ def CONNECT_ANN_Run():
         if (out > 0.5) == bad:
             points[ann_nid - 1]["points_id"].append(points[ann_nid - 1]["points_id"][-1] + 1)
             points[ann_nid - 1]["points_list"].append(points[ann_nid - 1]["points_list"][-1] + 1)
+            CONNECT_ANN.fit((0.501 if bad else 0.5) - out, 0.01)
         else:
+            CONNECT_ANN.fit((0.501 if bad else 0.5) - out, 0.01)
             points[ann_nid - 1]["points_id"].append(points[ann_nid - 1]["points_id"][-1] + 1)
             points[ann_nid - 1]["points_list"].append(points[ann_nid - 1]["points_list"][-1] - 1)
             print("Started to train")
@@ -77,21 +80,34 @@ def CONNECT_ANN_Run():
                     print("Finished train" + f" out: {out}")
                     break
                 elif out < 0.3:
-                    CONNECT_ANN.fit(0.501 - out, 0.1)
+                    CONNECT_ANN.fit((0.501 if bad else 0.5) - out, 0.1)
                 elif out > 0.6:
-                    CONNECT_ANN.fit(out - 0.499, 0.1)
+                    CONNECT_ANN.fit((0.501 if bad else 0.5) - out, 0.1)
                 else:
                     #CONNECT_ANN.fit((uniform(0.501, 0.539) - out if bad else out - uniform(0.460, 0.5)), 0.01)
-                    CONNECT_ANN.fit((uniform(0.501, 0.539) - out if bad else -(out - uniform(0.460, 0.5))), 0.01)
+                    CONNECT_ANN.fit((0.501 if bad else 0.5) - out, 0.01)
                 wait(0.01)
+    results.append(points[ann_nid - 1]["points_list"][-1])
+    while True:
+        inp = input()
+
+        if int(inp.split("#")[0]) == ann_nid:
+            decoded = decode_str(inp.split("#")[1])
+            out = round(CONNECT_ANN.run([np.float128(decoded / ((len(str(decoded)) * 10) - 1))])[0], 3)
+
+        print(f"Result: {str(out > 0.5)}")
+
+def compare(x, y):
+    if y > x:
+        return True
+    return False
 
 Thread(target=CONNECT_ANN_Run).start()
 Thread(target=CONNECT_ANN_Run).start()
 Thread(target=CONNECT_ANN_Run).start()
 
 while True:
-    inp = input()
-    if inp.lower() == "graph":
+    if len(results) >= 3:
         print("Show graph")
         for _result_list in points:
             plt.plot(_result_list["points_id"], _result_list["points_list"], label = f"ANN {_result_list['id']}")
@@ -100,4 +116,8 @@ while True:
         plt.title("ANN Result List")
         plt.legend()
         plt.show()
-        wait(1)
+        wait(0.5)
+           
+
+
+    wait(0.5)

@@ -11,6 +11,16 @@
         {"phrase": "nega gostosa", "isBad": true},
         {"phrase": "vai tomar no cu nego", "isBad": true},
 
+        {"phrase": "nego", "isBad": true},
+        {"phrase": "gay", "isBad": true},
+        {"phrase": "negro", "isBad": true},
+        {"phrase": "negao", "isBad": true},
+        {"phrase": "lesbica", "isBad": true},
+        {"phrase": "viado", "isBad": true},
+        {"phrase": "gays", "isBad": true},
+        {"phrase": "homo", "isBad": true},
+        {"phrase": "homoxexual", "isBad": true},
+
         {"phrase": "cara, tu e viado?", "isBad": true},
         {"phrase": "o cara e gay", "isBad": true},
         {"phrase": "bora mata os gays", "isBad": true},
