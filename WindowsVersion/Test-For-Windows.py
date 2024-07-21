@@ -100,6 +100,7 @@ class CONNECT_ANN():
                         self.CONNECT_ANN.fit((0.501 if bad else 0.5) - out, 0.01)
                     wait(0.01)
         finished_nns += 1
+        return
     
     def talk(self, _str):
         decoded = decode_str(_str)
@@ -113,14 +114,51 @@ def compare(x):
 print("How many Threads you want? - DANGER! - THIS VALUE CAN CRASH THE PROGRAM")
 maxn = int(input())
 
-anns = []
+def train(fromGenetic: bool):
+    global finished_nns
+    global nns
+    #global results
+    global points
 
-for _ in range(maxn) :
-    anns.append({"ann": CONNECT_ANN(), "id": _ + 1})
-    Thread(target=anns[-1]["ann"].run).start()
+    nns = 0
+    anns = []
+    #results.clear()
+    points.clear()
+    finished_nns = 0
 
-while finished_nns < maxn:
-    wait(0.1)
+    for _ in range(maxn) :
+        anns.append({"ann": CONNECT_ANN(), "id": _ + 1})
+        if fromGenetic:
+            data = {}
+            with open("bestNN.json", 'r') as f:
+                data = json.load(f)
+            anns[-1]["ann"].CONNECT_ANN.makeFromDict(data)
+        Thread(target=anns[-1]["ann"].run).start()
+
+    while finished_nns < maxn:
+        wait(0.1)
+
+    print(f"Best network: {points[-1]['id']}")
+    print(f"Points: {points[-1]['points_list']}")
+
+    print("Talk with the ANN")
+
+    points = sorted(points, key=compare)
+
+    '''
+    for _ in range(6):
+        inps = input()
+        anns[points[-1]['id']]["ann"].talk(inps)
+        print(f"{5 - _} remain")
+    '''
+
+    anns[points[-1]['id'] - 1]["ann"].CONNECT_ANN.saveAsJson("bestNN.json")
+
+
+train(fromGenetic=False)
+
+for i in range(4):
+    train(fromGenetic=True)
 
 for _result_list in points:
     plt.plot(_result_list["points_id"], _result_list["points_list"], label = f"ANN {_result_list['id']}")
@@ -129,14 +167,4 @@ plt.ylabel("Points")
 plt.title("ANN Result List")
 plt.legend()
 plt.show()
-
-points.sort(key=compare)
-
-print(f"Best network: {points[-1]['id']}")
-
-print("Talk with the ANN")
-
-for _ in range(6):
-    inps = input()
-    anns[points[-1]['id'] - 1]["ann"].talk(inps)
-    print(f"{5 - _} remain")
+plt.clf()
