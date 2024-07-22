@@ -165,3 +165,6 @@ cython_debug/
 test.ipynb
 # venv files
 .wvenv/
+
+# data
+bestNN.json

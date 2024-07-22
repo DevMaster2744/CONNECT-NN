@@ -10,6 +10,7 @@ from time import sleep as wait
 import numpy as np
 import random
 import unidecode
+import ctypes
 
 matplotlib.use("TkAgg")
 
@@ -19,6 +20,15 @@ results = []
 nns = 0
 finished_nns = 0
 points_graph_list = []
+
+ES_CONTINUOUS = 0x80000000
+ES_SYSTEM_REQUIRED = 0x00000001
+
+def prevent_shutdown():
+    ctypes.windll.kernel32.SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED)
+
+def allow_shutdown():
+    ctypes.windll.kernel32.SetThreadExecutionState(ES_CONTINUOUS)
 
 def read_train_data():
     print("Reading TRAIN_DATA.JSON")
@@ -46,13 +56,19 @@ print("How many times the ANN must train?")
 tinp = int(input())
 
 class CONNECT_ANN():
-    def __init__(self) -> None:
+    def __init__(self, **kwargs) -> None:
         self.CONNECT_ANN = cn.NeuralNetwork(1)
 
-        self.CONNECT_ANN.addLayer(170, cn.activationFunction.SIGMOID)
-        self.CONNECT_ANN.addLayer(50,  cn.activationFunction.TANH)
-        self.CONNECT_ANN.addLayer(15, cn.activationFunction.TANH)
-        self.CONNECT_ANN.addLayer(1, cn.activationFunction.SIGMOID)
+        if not 'addLayers' in kwargs:
+            self.CONNECT_ANN.addLayer(170, cn.activationFunction.SIGMOID)
+            self.CONNECT_ANN.addLayer(50,  cn.activationFunction.TANH)
+            self.CONNECT_ANN.addLayer(15, cn.activationFunction.TANH)
+            self.CONNECT_ANN.addLayer(1, cn.activationFunction.SIGMOID)
+        elif kwargs["addLayers"] == True:
+            self.CONNECT_ANN.addLayer(170, cn.activationFunction.SIGMOID)
+            self.CONNECT_ANN.addLayer(50,  cn.activationFunction.TANH)
+            self.CONNECT_ANN.addLayer(15, cn.activationFunction.TANH)
+            self.CONNECT_ANN.addLayer(1, cn.activationFunction.SIGMOID)
 
     def run(self):
         global points
@@ -127,12 +143,15 @@ def train(fromGenetic: bool):
     finished_nns = 0
 
     for _ in range(maxn) :
-        anns.append({"ann": CONNECT_ANN(), "id": _ + 1})
         if fromGenetic:
+            anns.append({"ann": CONNECT_ANN(addLayers = False), "id": _ + 1})
             data = {}
             with open("bestNN.json", 'r') as f:
                 data = json.load(f)
+                print(f"Layers: {len(data['layers'])}")
             anns[-1]["ann"].CONNECT_ANN.makeFromDict(data)
+        else:
+            anns.append({"ann": CONNECT_ANN(), "id": _ + 1})
         Thread(target=anns[-1]["ann"].run).start()
 
     while finished_nns < maxn:
@@ -153,18 +172,23 @@ def train(fromGenetic: bool):
     '''
 
     anns[points[-1]['id'] - 1]["ann"].CONNECT_ANN.saveAsJson("bestNN.json")
+if __name__ == "__main__":
+    try:
+        prevent_shutdown()
 
+        train(fromGenetic=False)
 
-train(fromGenetic=False)
+        for i in range(4):
+            train(fromGenetic=True)
 
-for i in range(4):
-    train(fromGenetic=True)
+        for _result_list in points:
+            plt.plot(_result_list["points_id"], _result_list["points_list"], label = f"ANN {_result_list['id']}")
+    finally:
+        allow_shutdown()
 
-for _result_list in points:
-    plt.plot(_result_list["points_id"], _result_list["points_list"], label = f"ANN {_result_list['id']}")
-plt.xlabel("Runs")
-plt.ylabel("Points")
-plt.title("ANN Result List")
-plt.legend()
-plt.show()
-plt.clf()
+        plt.xlabel("Runs")
+        plt.ylabel("Points")
+        plt.title("ANN Result List")
+        plt.legend()
+        plt.show()
+        plt.clf()
