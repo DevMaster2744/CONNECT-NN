@@ -172,6 +172,9 @@ def train(fromGenetic: bool):
     '''
 
     anns[points[-1]['id'] - 1]["ann"].CONNECT_ANN.saveAsJson("bestNN.json")
+
+allow_shutdown()
+
 if __name__ == "__main__":
     try:
         prevent_shutdown()

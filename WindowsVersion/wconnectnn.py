@@ -83,7 +83,7 @@ class NeuralNetwork():
             self.layers.append(layer(self.initialInputSize if len(self.layers) == 0 else self.layers[-1]._get_units_len_(), kwargs["fromDict"]["layerSize"], kwargs["fromDict"]["layerType"], fromDict=kwargs["fromDict"]))
         
     def fit(self, error: float, alpha: float):
-        print(f"layers: {len(self.layers)}")
+        #print(f"layers: {len(self.layers)}")
         for layer in self.layers:
             layer.fit(error, alpha)
         
