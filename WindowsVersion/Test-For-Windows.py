@@ -171,7 +171,7 @@ def train(fromGenetic: bool):
         print(f"{5 - _} remain")
     '''
 
-    anns[points[-1]['id'] - 1]["ann"].CONNECT_ANN.saveAsJson("bestNN.json")
+    anns[points[-1]['id'] - 1]["ann"].CONNECT_ANN.saveAsJson("best_nn.json")
 
 if __name__ == "__main__":
     try:
