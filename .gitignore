@@ -167,4 +167,4 @@ test.ipynb
 .wvenv/
 
 # data
-bestNN.json
+best_nn.json
