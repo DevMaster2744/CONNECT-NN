@@ -146,7 +146,7 @@ def train(fromGenetic: bool):
         if fromGenetic:
             anns.append({"ann": CONNECT_ANN(addLayers = False), "id": _ + 1})
             data = {}
-            with open("bestNN.json", 'r') as f:
+            with open("best_nn.json", 'r') as f:
                 data = json.load(f)
                 print(f"Layers: {len(data['layers'])}")
             anns[-1]["ann"].CONNECT_ANN.makeFromDict(data)
