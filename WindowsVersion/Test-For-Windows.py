@@ -3,6 +3,7 @@ import wconnectnn as cn
 import matplotlib
 import matplotlib.pyplot as plt
 from threading import Thread
+import multiprocessing
 import json
 from random import randint
 from random import uniform
@@ -12,13 +13,16 @@ import random
 import unidecode
 import ctypes
 
+if __name__ == '__main__':
+    multiprocessing.freeze_support()
+
 matplotlib.use("TkAgg")
 
-points = []
+points = multiprocessing.Manager().list()
 results = []
 
-nns = 0
-finished_nns = 0
+nns = multiprocessing.Value('i', 0)
+finished_nns = multiprocessing.Value('i', 0)
 points_graph_list = []
 
 ES_CONTINUOUS = 0x80000000
@@ -71,15 +75,14 @@ class CONNECT_ANN():
             self.CONNECT_ANN.addLayer(1, cn.activationFunction.SIGMOID)
 
     def run(self):
-        global points
         global finished_nns
         global nns
-        global tinp
+        global points
 
         print("Setup of ANN - Connect-NN")
         print("ANN - CONNECT-NN SETUP FINISHED")
-
-        nns += 1
+        
+        nns.value += 1
         ann_nid = nns
         
         points.append({"id": ann_nid, "points_list": [0], "points_id": [0]})
@@ -115,7 +118,7 @@ class CONNECT_ANN():
                         #CONNECT_ANN.fit((uniform(0.501, 0.539) - out if bad else out - uniform(0.460, 0.5)), 0.01)
                         self.CONNECT_ANN.fit((0.501 if bad else 0.5) - out, 0.01)
                     wait(0.01)
-        finished_nns += 1
+        finished_nns.value += 1
         return
     
     def talk(self, _str):
@@ -131,47 +134,52 @@ print("How many Threads you want? - DANGER! - THIS VALUE CAN CRASH THE PROGRAM")
 maxn = int(input())
 
 def train(fromGenetic: bool):
-    global finished_nns
-    global nns
-    #global results
-    global points
+    if __name__ == "__main__":
+        global finished_nns
+        global nns
+        #global results
+        global points
+        
+        nns.value = 0
+        anns = []
+        #results.clear()
+        points.clear()
+        finished_nns.value = 0
 
-    nns = 0
-    anns = []
-    #results.clear()
-    points.clear()
-    finished_nns = 0
+        for _ in range(maxn - 1) :
+            if fromGenetic:
+                anns.append({"ann": CONNECT_ANN(addLayers = False), "id": _ + 1})
+                data = {}
+                with open("best_nn.json", 'r') as f:
+                    data = json.load(f)
+                    print(f"Layers: {len(data['layers'])}")
+                anns[-1]["ann"].CONNECT_ANN.makeFromDict(data)
+            else:
+                anns.append({"ann": CONNECT_ANN(), "id": _ + 1})
+            pr = multiprocessing.Process(target=anns[-1]["ann"].run)
+            pr.start()
 
-    for _ in range(maxn) :
-        if fromGenetic:
-            anns.append({"ann": CONNECT_ANN(addLayers = False), "id": _ + 1})
-            data = {}
-            with open("best_nn.json", 'r') as f:
-                data = json.load(f)
-                print(f"Layers: {len(data['layers'])}")
-            anns[-1]["ann"].CONNECT_ANN.makeFromDict(data)
-        else:
-            anns.append({"ann": CONNECT_ANN(), "id": _ + 1})
-        Thread(target=anns[-1]["ann"].run).start()
+        while finished_nns.value < maxn:
+            wait(0.1)
 
-    while finished_nns < maxn:
-        wait(0.1)
+        print(f"Best network: {points[-1]['id']}")
+        print(f"Points: {points[-1]['points_list']}")
 
-    print(f"Best network: {points[-1]['id']}")
-    print(f"Points: {points[-1]['points_list']}")
+        print("Talk with the ANN")
 
-    print("Talk with the ANN")
+        points = sorted(points, key=compare)
 
-    points = sorted(points, key=compare)
+        '''
+        for _ in range(6):
+            inps = input()
+            anns[points[-1]['id']]["ann"].talk(inps)
+            print(f"{5 - _} remain")
+        '''
 
-    '''
-    for _ in range(6):
-        inps = input()
-        anns[points[-1]['id']]["ann"].talk(inps)
-        print(f"{5 - _} remain")
-    '''
+        anns[points[-1]['id'] - 1]["ann"].CONNECT_ANN.saveAsJson("best_nn.json")
 
-    anns[points[-1]['id'] - 1]["ann"].CONNECT_ANN.saveAsJson("best_nn.json")
+print("How many genetic tests?")
+inpgt = input()
 
 if __name__ == "__main__":
     try:
@@ -179,7 +187,7 @@ if __name__ == "__main__":
 
         train(fromGenetic=False)
 
-        for i in range(4):
+        for i in range(max(0, int(inpgt))):
             train(fromGenetic=True)
 
         for _result_list in points:
