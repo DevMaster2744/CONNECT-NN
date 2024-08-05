@@ -58,6 +58,7 @@ class ConnectNetwork(multiprocessing.Process):
 
         self.CONNECT_ANN = cn.NeuralNetwork(1)
 
+        self.run()
         def buildNetwork():
             self.CONNECT_ANN.addLayer(170, cn.activationFunction.SIGMOID)
             self.CONNECT_ANN.addLayer(50,  cn.activationFunction.TANH)
@@ -81,28 +82,43 @@ class ConnectNetwork(multiprocessing.Process):
             out = round(self.CONNECT_ANN.run(ff_algorithm(phrase))[0], 3)
             if (out > 0.5) != bad:
                 self.CONNECT_ANN.fit(bp_algorithm(bad, out), 0.01)
+                self.points[self.pointsId].append(out)
+                points = self.points
             print(f"OUT: {out}")
     def saveJson(self):
         self.CONNECT_ANN.saveAsJson("best_nn.json")
 
-print("How many times per generation?")
-inp_times = int(input())
-
-print("How many generations?")
-gens = int(input())
-
-print("How many ANNS per generations?")
-ann_per_gen = int(input())
-
 if __name__ == "__main__":
+    print("How many times per generation?")
+    inp_times = int(input())
+
+    print("How many generations?")
+    gens = int(input())
+
+    print("How many ANNS per generations?")
+    ann_per_gen = int(input())
+
     multiprocessing.freeze_support()
 
     with multiprocessing.Manager() as manager:
         points = manager.list()
-
         processes = []
+        def generation_addLayers():
+            for time in range(ann_per_gen):
+                process = ConnectNetwork(inp_times, points, addLayers=True)
+                process.start()
+                processes.append(process)
+            for task in processes:
+                task.join()
+            
+            averages = []
 
-        for gen in range(gens):
+            for ann_points in points:
+                averages.append(ann_points)
+
+            print(averages)
+
+        def generation():
             for time in range(ann_per_gen):
                 process = ConnectNetwork(inp_times, points, addLayers=False)
                 process.start()
@@ -112,7 +128,23 @@ if __name__ == "__main__":
             
             averages = []
 
+            print(points)
+
             for ann_points in points:
-                averages.append()
+                averages.append(ann_points)
+
+            print(averages)
+        
+        print("AddLayers? - TYPE YES OR NO")
+
+        alinp = input()
+
+        if alinp.lower() == "yes":
+            generation_addLayers()
+        elif not alinp.lower() == "no":
+            exit()
+        
+        for gen in range(gens):
+            generation()
             
 
