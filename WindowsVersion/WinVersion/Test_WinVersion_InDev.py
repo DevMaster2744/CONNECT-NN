@@ -8,6 +8,8 @@ import numpy as np
 from time import sleep
 from random import randint
 from wcnnMainLib import select_random_train_data, train_data, ff_algorithm, bp_algorithm
+import matplotlib.pyplot as plt
+
 def run_network(points, times, add_layers):
         #super(ConnectNetwork, self).__init__()
 
@@ -92,6 +94,8 @@ if __name__ == "__main__":
             averages.sort(key=lambda x: x["average"])
             print(f"Averages: {averages} // Best Average: {averages[-1]}")
             #averages[-1]["ann"].saveAsJson("best_nn.json")
+            #return averages[-1]["ann_results"]
+            print(f"// FINAL RESULT: {averages[-1]["average"]} //")
         
     print("AddLayers? - TYPE Y OR N")
 
@@ -102,7 +106,5 @@ if __name__ == "__main__":
     elif not alinp.lower() == "n":
         exit()
     
-    for gen in range((gens - 1) if alinp.lower() == "y" else gens):
+    for gen in range((gens - 2) if alinp.lower() == "y" else (gens - 1)):
         generation(False)
-            
-
