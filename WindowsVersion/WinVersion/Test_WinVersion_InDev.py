@@ -5,6 +5,7 @@ import wconnectnn as cn
 import ctypes
 import unidecode
 import numpy as np
+from time import sleep
 from random import randint
 from wcnnMainLib import select_random_train_data, train_data, ff_algorithm, bp_algorithm
 def run_network(points, times, add_layers):
@@ -13,9 +14,9 @@ def run_network(points, times, add_layers):
         times = times
         points = points
         
-        set_lrid = False
+        #set_lrid = False
+        #pointsId = points["LastRegisteredId"] + 1
         points["LastRegisteredId"] += 1
-        pointsId = points["LastRegisteredId"]
         results = []
 
         CONNECT_ANN = cn.NeuralNetwork(1)
@@ -47,12 +48,10 @@ def run_network(points, times, add_layers):
             result = 1 if correct else -1
 
             results.append(results[-1] + result if len(results) > 0 else 0 + 1 if correct else result)
-        pts_preset = dict(points["results"])
-        pts_preset[pointsId] = {"id": pointsId, "ann_results": results}
-        #points = pts_preset
-
-        points.update({"LastRegisteredId": points["LastRegisteredId"],
-                       "results": pts_preset})
+        pts_preset = points["results"]
+        pts_preset.append({"ann_results": results, "cann": CONNECT_ANN})
+        points.update({"results": pts_preset})
+        return
         
 
 if __name__ == "__main__":
@@ -68,38 +67,42 @@ if __name__ == "__main__":
     multiprocessing.freeze_support()
     def generation(add_layers):
         with multiprocessing.Manager() as manager:
-            points = manager.dict({"LastRegisteredId": -1, "results": {}})
+            points = manager.dict({"LastRegisteredId": -1, "results": []})
             processes = []
 
-            points["LastRegisteredId"] = -1
             for time in range(ann_per_gen):
                 process = multiprocessing.Process(target=run_network, args=(points, inp_times, add_layers), name=f"CONNECT-NN {time}")
                 process.start()
                 processes.append(process)
+                #sleep(0.25)
+                
 
             for prcs in processes:
                 prcs.join()
+                print("################ENDED#####################")
             
             averages = []
 
             print(points)
 
-            for i in range(points["LastRegisteredId"] + 1):
-                averages.append({"id": i, "average": np.average(points["results"][i]["ann_results"])})
+            for results_dict in points["results"]:
+                #results_dict = points["results"][i]
+                averages.append({"average": np.average(results_dict["ann_results"]), "ann": results_dict["cann"]})
 
             averages.sort(key=lambda x: x["average"])
             print(f"Averages: {averages} // Best Average: {averages[-1]}")
+            #averages[-1]["ann"].saveAsJson("best_nn.json")
         
-    print("AddLayers? - TYPE YES OR NO")
+    print("AddLayers? - TYPE Y OR N")
 
     alinp = input()
 
-    if alinp.lower() == "yes":
+    if alinp.lower() == "y":
         generation(True)
-    elif not alinp.lower() == "no":
+    elif not alinp.lower() == "n":
         exit()
     
-    for gen in range(gens - 1):
+    for gen in range((gens - 1) if alinp.lower() == "y" else gens):
         generation(False)
             
 
