@@ -10,6 +10,8 @@ from random import randint
 from wcnnMainLib import select_random_train_data, train_data, ff_algorithm, bp_algorithm
 import matplotlib.pyplot as plt
 
+a = [-43, 6, -26, 3455]
+
 def run_network(points, times, add_layers):
         #super(ConnectNetwork, self).__init__()
 
@@ -47,9 +49,9 @@ def run_network(points, times, add_layers):
             if not correct:
                 CONNECT_ANN.fit(bp_algorithm(bad, out), 0.01)
             
-            result = 1 if correct else -1
+            result = 1 if correct else 0
 
-            results.append(results[-1] + result if len(results) > 0 else 0 + 1 if correct else result)
+            results.append((result + results[-1]) if len(results) > 0 else 0)
         pts_preset = points["results"]
         pts_preset.append({"ann_results": results, "cann": CONNECT_ANN})
         points.update({"results": pts_preset})
@@ -89,17 +91,18 @@ if __name__ == "__main__":
 
             for results_dict in points["results"]:
                 #results_dict = points["results"][i]
-                averages.append({"average": np.average(results_dict["ann_results"]), "ann": results_dict["cann"]})
+                averages.append({"average": results_dict["ann_results"][-1], "ann": results_dict["cann"]})
 
             averages.sort(key=lambda x: x["average"])
             print(f"Averages: {averages} // Best Average: {averages[-1]}")
-            #averages[-1]["ann"].saveAsJson("best_nn.json")
             #return averages[-1]["ann_results"]
             print(f"// FINAL RESULT: {averages[-1]["average"]} //")
+            averages[-1]["ann"].saveAsJson("best_nn.json")
         
     print("AddLayers? - TYPE Y OR N")
 
     alinp = input()
+    #alinp = "n"
 
     if alinp.lower() == "y":
         generation(True)
