@@ -47,8 +47,10 @@ def run_network(points, times, add_layers):
             correct = (out > 0.5) == bad
 
             if not correct:
-                CONNECT_ANN.fit(bp_algorithm(bad, out), 0.01)
+                CONNECT_ANN.fit(1, 0.1)
             
+            CONNECT_ANN.fit(bp_algorithm(bad, out), 0.01)
+
             result = 1 if correct else 0
 
             results.append((result + results[-1]) if len(results) > 0 else 0)
