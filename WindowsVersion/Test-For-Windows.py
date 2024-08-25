@@ -1,5 +1,5 @@
 from typing import Mapping
-import wconnectnn as cn
+import WindowsVersion.WinVersion.wconnectnn as cn
 import matplotlib
 import matplotlib.pyplot as plt
 from threading import Thread
