@@ -26,8 +26,8 @@ def run_network(points, times, add_layers, canPrint):
         CONNECT_ANN = cn.NeuralNetwork(1)
 
         def buildNetwork():
-            CONNECT_ANN.addLayer(170, cn.activationFunction.SIGMOID)
-            CONNECT_ANN.addLayer(50,  cn.activationFunction.TANH)
+            CONNECT_ANN.addLayer(360, cn.activationFunction.SIGMOID)
+            CONNECT_ANN.addLayer(75,  cn.activationFunction.TANH)
             CONNECT_ANN.addLayer(15, cn.activationFunction.TANH)
             CONNECT_ANN.addLayer(1, cn.activationFunction.SIGMOID)
 
@@ -47,16 +47,15 @@ def run_network(points, times, add_layers, canPrint):
             correct = (out > 0.5) == bad
 
             if not correct:
-                CONNECT_ANN.fit(1, 0.1)
-            
-            CONNECT_ANN.fit(bp_algorithm(bad, out), 0.01)
+                #CONNECT_ANN.fit(1, 0.1)
+                CONNECT_ANN.fit(bp_algorithm(bad, out), 0.01)
 
             result = 1 if correct else 0
 
             results.append((result + results[-1]) if len(results) > 0 else 0)
             percentage = int((i / times) * 100)
             if canPrint:
-                print(f"\r{percentage}% |{'█' * percentage + '-' * (100 - percentage)}|", end="\r")
+                print(f"\r{percentage}% |{'█' * percentage + '-' * (100 - percentage)}| - OUT: {out}", end="\r")
         pts_preset = points["results"]
         pts_preset.append({"ann_results": results, "cann": CONNECT_ANN})
         points.update({"results": pts_preset})

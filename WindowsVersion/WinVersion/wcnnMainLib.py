@@ -5,7 +5,7 @@ import ctypes
 from random import randint
 
 def bp_algorithm(cond: bool, out: float):
-    return (0.501 if cond else 0.5) - out
+    return (1 if cond else 0) - out
 
 def ff_algorithm(phrase: str):
     decoded = decode_str(phrase)
