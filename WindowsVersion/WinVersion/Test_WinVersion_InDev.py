@@ -10,8 +10,6 @@ from random import randint
 from wcnnMainLib import select_random_train_data, train_data, ff_algorithm, bp_algorithm
 import matplotlib.pyplot as plt
 
-a = [-43, 6, -26, 3455]
-
 def run_network(points, times, add_layers, canPrint):
         #super(ConnectNetwork, self).__init__()
 
@@ -23,7 +21,7 @@ def run_network(points, times, add_layers, canPrint):
         points["LastRegisteredId"] += 1
         results = []
 
-        CONNECT_ANN = cn.NeuralNetwork(1)
+        CONNECT_ANN = cn.NeuralNetwork(2)
 
         def buildNetwork():
             CONNECT_ANN.addLayer(360, cn.activationFunction.SIGMOID)
@@ -42,7 +40,8 @@ def run_network(points, times, add_layers, canPrint):
             #print(f"RUN {i + 1}")
             phrase, bad, id = select_random_train_data(train_data)
             #points[pointsId].append(i)
-            out = round(CONNECT_ANN.run(ff_algorithm(phrase))[0], 3)
+            decoded_phrase, mdi = ff_algorithm(phrase)
+            out = round(CONNECT_ANN.run([decoded_phrase, mdi])[0], 3)
 
             correct = (out > 0.5) == bad
 
@@ -63,7 +62,7 @@ def run_network(points, times, add_layers, canPrint):
         
 
 if __name__ == "__main__":
-    print("How many times per generation?")
+    print("How many times per generation?") 
     inp_times = int(input())
 
     print("How many generations?")
@@ -95,14 +94,17 @@ if __name__ == "__main__":
             
             averages = []
 
-            print(points)
+            #print(points)
 
             for results_dict in points["results"]:
                 #results_dict = points["results"][i]
                 averages.append({"average": results_dict["ann_results"][-1], "ann": results_dict["cann"]})
 
             averages.sort(key=lambda x: x["average"])
-            print(f"Averages: {averages} // Best Average: {averages[-1]}")
+
+            for i in range(ann_per_gen):
+                print(f"// ANN {i} RESULT: {averages[i]['average']} //")
+            
             #return averages[-1]["ann_results"]
             print(f"// FINAL RESULT: {averages[-1]['average']} //")
             averages[-1]["ann"].saveAsJson("best_nn.json")

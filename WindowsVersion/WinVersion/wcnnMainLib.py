@@ -2,14 +2,15 @@ import unidecode
 import numpy as np
 import json
 import ctypes
+from math import gcd
 from random import randint
 
 def bp_algorithm(cond: bool, out: float):
     return (1 if cond else 0) - out
 
 def ff_algorithm(phrase: str):
-    decoded = decode_str(phrase)
-    return [np.longdouble(decoded / ((len(str(decoded)) * 10) - 1))]
+    decoded, dec_gcd = decode_str(phrase)
+    return np.longdouble(decoded / ((len(str(decoded)) * 10) - 1)), dec_gcd
 
 ES_CONTINUOUS = 0x80000000
 ES_SYSTEM_REQUIRED = 0x00000001
@@ -35,10 +36,21 @@ def select_random_train_data(_train_data):
     data = _train_data["phrases"][rand_int]
     return unidecode.unidecode(data["phrase"]), data["isBad"], rand_int
 
+def mdi(x):
+    for i in range(x):
+        div = i + 1
+        if x % div == 0:
+            return div
+
 def decode_str(str_: str):
-    out = np.longdouble(0)
+    out = np.long(0)
     for wrd in str_:
         for chr in wrd:
             chr_ord = ord(chr)
-            out = (out * (10 ** len(str(chr_ord))) + ord(chr))
-    return out
+            out = (out + int(chr_ord))
+
+    out_mdi = mdi(out)
+
+    out /= out_mdi
+
+    return out, out_mdi
