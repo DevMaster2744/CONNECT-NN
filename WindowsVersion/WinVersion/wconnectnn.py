@@ -1,6 +1,7 @@
 import numpy as np
 from random import uniform
 from enum import Enum
+from numba import njit
 import json
 #from numpyencoder import NumpyEncoder
 
@@ -19,6 +20,28 @@ def activationFunctionFromEnum(x: np.longdouble, activationFunctionType: activat
     
     if activationFunctionType == activationFunction.BINARY:
         return 1 if (1 / (1 + np.exp(-x, dtype=np.longdouble)) > 0.5) else 0
+
+@njit
+def activationFunctionFromEnumNoPythonCompatibility(x: np.longdouble, activationFunctionTypeId: np.int64) -> float:
+    if activationFunctionTypeId == 1:
+        return np.longdouble(1 / (1 + np.exp(-x)))
+    
+    if activationFunctionTypeId == 2:
+        th = (np.longdouble(np.exp(x) - np.exp(-x)) / (np.exp(x) + np.exp(-x)))
+        return th
+    
+    if activationFunctionTypeId == 3:
+        return 1 if (1 / (1 + np.exp(-x)) > 0.5) else 0
+
+def ff_calculator(inputs: list, weights: list, activationFunctionTypeId: np.int64):
+    result = np.dot(inputs, weights)
+    result = activationFunctionFromEnumNoPythonCompatibility(result, activationFunctionTypeId)
+
+    return result
+
+@njit
+def bp_calculator(input: list, activationFunctionTypeId: np.int64, error: np.float64, alpha: np.float64):
+    return activationFunctionFromEnumNoPythonCompatibility(input, activationFunctionTypeId) * error * alpha
 
 class CustomEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -40,15 +63,12 @@ class unit():
         self.output = 0
     def run(self, inputs: tuple) -> float:
         self.inputs = inputs
-
-        result = np.dot(inputs, self.weights)
-
-        result = activationFunctionFromEnum(result, self.activationFunctionType)
+        result = ff_calculator(inputs, self.weights, self.activationFunctionType.value)
         return result
 
-    def fit(self, error: float, alpha: float):
+    def fit(self, error: np.float64, alpha: np.float64):
         for i in range(len(self.weights)):
-            self.weights[i] +=  activationFunctionFromEnum(self.inputs[i], self.activationFunctionType) * error * alpha
+            self.weights[i] += bp_calculator(self.inputs[i], self.activationFunctionType.value, error, alpha)
     '''def setInputSize(self, inputSize: int):
         self.inp'''
 
