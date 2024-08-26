@@ -2,15 +2,15 @@ import multiprocessing
 import json
 import multiprocessing
 import wconnectnn as cn
-import ctypes
-import unidecode
+#import ctypes
+#import unidecode
 import numpy as np
 from time import sleep
 from random import randint
 from wcnnMainLib import select_random_train_data, train_data, ff_algorithm, bp_algorithm
 import matplotlib.pyplot as plt
 
-def run_network(points, times, add_layers, canPrint):
+def run_network(points, lrid, times, add_layers, canPrint):
         #super(ConnectNetwork, self).__init__()
 
         times = times
@@ -18,7 +18,7 @@ def run_network(points, times, add_layers, canPrint):
         
         #set_lrid = False
         #pointsId = points["LastRegisteredId"] + 1
-        points["LastRegisteredId"] += 1
+        lrid.value += 1
         results = []
 
         CONNECT_ANN = cn.NeuralNetwork(2)
@@ -55,10 +55,12 @@ def run_network(points, times, add_layers, canPrint):
             percentage = int((i / times) * 100)
             if canPrint:
                 print(f"\r{percentage}% |{'█' * percentage + '-' * (100 - percentage)}| - OUT: {out}", end="\r")
-        pts_preset = points["results"]
-        pts_preset.append({"ann_results": results, "cann": CONNECT_ANN})
-        points.update({"results": pts_preset})
-        return
+
+        #pts_preset = points["results"]
+        #pts_preset.append({"ann_results": results, "cann": CONNECT_ANN})
+        #print(f"RESULTS: {results}")
+        points.append({"ann_results": results, "cann": CONNECT_ANN})
+        #return
         
 
 if __name__ == "__main__":
@@ -71,32 +73,37 @@ if __name__ == "__main__":
     print("How many ANNS per generations?")
     ann_per_gen = int(input())
 
-    multiprocessing.freeze_support()
     def generation(add_layers):
         with multiprocessing.Manager() as manager:
-            points = manager.dict({"LastRegisteredId": -1, "results": []})
+            multiprocessing.freeze_support()
+
+            points = manager.list([])
+            LastRegisteredId = manager.Value(typecode=int, value=-1)
+
             processes = []
             
             def start_process(canItPrint: bool):
-                process = multiprocessing.Process(target=run_network, args=(points, inp_times, add_layers, canItPrint), name=f"CONNECT-NN {time}")
+                process = multiprocessing.Process(target=run_network, args=(points, LastRegisteredId, inp_times, add_layers, canItPrint))
                 process.start()
                 processes.append(process)
+                #sleep(0.25)
+                return
 
             for time in range(ann_per_gen - 1):
                 start_process(False)
                 #sleep(0.25)
 
             start_process(True)
-                
+            
             for prcs in processes:
                 prcs.join()
-                #print("################ENDED#####################")
-            
+
+            #print(points)
             averages = []
 
             #print(points)
 
-            for results_dict in points["results"]:
+            for results_dict in points:
                 #results_dict = points["results"][i]
                 averages.append({"average": results_dict["ann_results"][-1], "ann": results_dict["cann"]})
 
