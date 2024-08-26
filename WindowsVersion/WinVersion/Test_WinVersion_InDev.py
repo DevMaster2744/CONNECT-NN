@@ -105,7 +105,7 @@ if __name__ == "__main__":
             averages.sort(key=lambda x: x["average"])
             print(f"Averages: {averages} // Best Average: {averages[-1]}")
             #return averages[-1]["ann_results"]
-            print(f"// FINAL RESULT: {averages[-1]["average"]} //")
+            print(f"// FINAL RESULT: {averages[-1]['average']} //")
             averages[-1]["ann"].saveAsJson("best_nn.json")
         
     print("AddLayers? - TYPE Y OR N")
