@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 
 a = [-43, 6, -26, 3455]
 
-def run_network(points, times, add_layers):
+def run_network(points, times, add_layers, canPrint):
         #super(ConnectNetwork, self).__init__()
 
         times = times
@@ -39,7 +39,7 @@ def run_network(points, times, add_layers):
             CONNECT_ANN.makeFromDict(data)
 
         for i in range(times):
-            print(f"RUN {i + 1}")
+            #print(f"RUN {i + 1}")
             phrase, bad, id = select_random_train_data(train_data)
             #points[pointsId].append(i)
             out = round(CONNECT_ANN.run(ff_algorithm(phrase))[0], 3)
@@ -54,6 +54,9 @@ def run_network(points, times, add_layers):
             result = 1 if correct else 0
 
             results.append((result + results[-1]) if len(results) > 0 else 0)
+            percentage = int((i / times) * 100)
+            if canPrint:
+                print(f"\r{percentage}% |{'█' * percentage + '-' * (100 - percentage)}|", end="\r")
         pts_preset = points["results"]
         pts_preset.append({"ann_results": results, "cann": CONNECT_ANN})
         points.update({"results": pts_preset})
@@ -75,17 +78,21 @@ if __name__ == "__main__":
         with multiprocessing.Manager() as manager:
             points = manager.dict({"LastRegisteredId": -1, "results": []})
             processes = []
-
-            for time in range(ann_per_gen):
-                process = multiprocessing.Process(target=run_network, args=(points, inp_times, add_layers), name=f"CONNECT-NN {time}")
+            
+            def start_process(canItPrint: bool):
+                process = multiprocessing.Process(target=run_network, args=(points, inp_times, add_layers, canItPrint), name=f"CONNECT-NN {time}")
                 process.start()
                 processes.append(process)
-                #sleep(0.25)
-                
 
+            for time in range(ann_per_gen - 1):
+                start_process(False)
+                #sleep(0.25)
+
+            start_process(True)
+                
             for prcs in processes:
                 prcs.join()
-                print("################ENDED#####################")
+                #print("################ENDED#####################")
             
             averages = []
 
