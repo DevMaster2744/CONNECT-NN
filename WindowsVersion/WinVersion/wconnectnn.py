@@ -5,6 +5,14 @@ from numba import njit
 import json
 #from numpyencoder import NumpyEncoder
 
+print("Use compatibility mode?")
+inp = input()
+
+if inp.lower() == "y":
+    inp = True
+else:
+    inp = False
+
 class activationFunction(Enum):
     SIGMOID = 1
     BINARY = 2
@@ -12,17 +20,17 @@ class activationFunction(Enum):
 
 def activationFunctionFromEnum(x: np.longdouble, activationFunctionType: activationFunction) -> float:
     if activationFunctionType == activationFunction.SIGMOID:
-        return np.longdouble(1 / (1 + np.exp(-x, dtype=np.longdouble)))
+        return np.longdouble(1 / (1 + np.exp(-x)))
     
     if activationFunctionType == activationFunction.TANH:
-        th = (np.longdouble(np.exp(x, dtype=np.longdouble) - np.exp(-x, dtype=np.longdouble)) / (np.exp(x, dtype=np.longdouble) + np.exp(-x, dtype=np.longdouble)))
+        th = (np.longdouble(np.exp(x) - np.exp(-x)) / (np.exp(x) + np.exp(-x)))
         return th
     
     if activationFunctionType == activationFunction.BINARY:
-        return 1 if (1 / (1 + np.exp(-x, dtype=np.longdouble)) > 0.5) else 0
+        return 1 if (1 / (1 + np.exp(-x)) > 0.5) else 0
 
 @njit
-def activationFunctionFromEnumNoPythonCompatibility(x: np.longdouble, activationFunctionTypeId: np.int64) -> float:
+def activationFunctionFromEnumNoPythonCompatibility(x: np.longdouble, activationFunctionTypeId: int) -> float:
     if activationFunctionTypeId == 1:
         return np.longdouble(1 / (1 + np.exp(-x)))
     
@@ -33,14 +41,15 @@ def activationFunctionFromEnumNoPythonCompatibility(x: np.longdouble, activation
     if activationFunctionTypeId == 3:
         return 1 if (1 / (1 + np.exp(-x)) > 0.5) else 0
 
-def ff_calculator(inputs: list, weights: list, activationFunctionTypeId: np.int64):
+@njit
+def ff_calculator(inputs: list, weights: list, activationFunctionTypeId: int):
     result = np.dot(inputs, weights)
     result = activationFunctionFromEnumNoPythonCompatibility(result, activationFunctionTypeId)
 
     return result
 
 @njit
-def bp_calculator(input: list, activationFunctionTypeId: np.int64, error: np.float64, alpha: np.float64):
+def bp_calculator(input: list, activationFunctionTypeId: int, error: float, alpha: float):
     return activationFunctionFromEnumNoPythonCompatibility(input, activationFunctionTypeId) * error * alpha
 
 class CustomEncoder(json.JSONEncoder):
@@ -63,12 +72,21 @@ class unit():
         self.output = 0
     def run(self, inputs: tuple) -> float:
         self.inputs = inputs
-        result = ff_calculator(inputs, self.weights, self.activationFunctionType.value)
+        if not inp:
+            result = ff_calculator(inputs, self.weights, self.activationFunctionType.value)
+        else:
+            result = np.dot(inputs, self.weights)
+            result = activationFunctionFromEnum(result, self.activationFunctionType)
         return result
 
     def fit(self, error: np.float64, alpha: np.float64):
         for i in range(len(self.weights)):
-            self.weights[i] += bp_calculator(self.inputs[i], self.activationFunctionType.value, error, alpha)
+            if not inp:
+                self.weights[i] += bp_calculator(self.inputs[i], self.activationFunctionType.value, error, alpha)
+            else:
+                self.weights[i] += activationFunctionFromEnum(self.inputs[i], self.activationFunctionType) * error * alpha
+
+
     '''def setInputSize(self, inputSize: int):
         self.inp'''
 
