@@ -10,7 +10,7 @@ from random import randint
 from wcnnMainLib import select_random_train_data, train_data, ff_algorithm, bp_algorithm
 import matplotlib.pyplot as plt
 
-def run_network(points, lrid, times, add_layers, canPrint):
+def run_network(points, lrid, times, add_layers, canPrint, linuxComp):
         #super(ConnectNetwork, self).__init__()
 
         times = times
@@ -21,7 +21,7 @@ def run_network(points, lrid, times, add_layers, canPrint):
         lrid.value += 1
         results = []
 
-        CONNECT_ANN = cn.NeuralNetwork(2)
+        CONNECT_ANN = cn.NeuralNetwork(2, linuxComp)
 
         def buildNetwork():
             CONNECT_ANN.addLayer(360, cn.activationFunction.SIGMOID)
@@ -64,6 +64,16 @@ def run_network(points, lrid, times, add_layers, canPrint):
         
 
 if __name__ == "__main__":
+    print("Use compatibility mode?")
+    linuxComp_inp = input().lower()
+
+    if linuxComp_inp == "y":
+        linuxComp_inp = True
+    elif linuxComp_inp == "n":
+        linuxComp_inp = False
+    else:
+        exit()
+
     print("How many times per generation?") 
     inp_times = int(input())
 
@@ -83,7 +93,7 @@ if __name__ == "__main__":
             processes = []
             
             def start_process(canItPrint: bool):
-                process = multiprocessing.Process(target=run_network, args=(points, LastRegisteredId, inp_times, add_layers, canItPrint))
+                process = multiprocessing.Process(target=run_network, args=(points, LastRegisteredId, inp_times, add_layers, canItPrint, linuxComp_inp))
                 process.start()
                 processes.append(process)
                 #sleep(0.25)

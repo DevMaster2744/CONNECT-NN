@@ -5,14 +5,6 @@ from numba import njit
 import json
 #from numpyencoder import NumpyEncoder
 
-print("Use compatibility mode?")
-inp = input()
-
-if inp.lower() == "y":
-    inp = True
-else:
-    inp = False
-
 class activationFunction(Enum):
     SIGMOID = 1
     BINARY = 2
@@ -20,17 +12,17 @@ class activationFunction(Enum):
 
 def activationFunctionFromEnum(x: np.longdouble, activationFunctionType: activationFunction) -> float:
     if activationFunctionType == activationFunction.SIGMOID:
-        return np.longdouble(1 / (1 + np.exp(-x)))
+        return np.longdouble(1 / (1 + np.exp(-x, dtype=np.longdouble)))
     
     if activationFunctionType == activationFunction.TANH:
-        th = (np.longdouble(np.exp(x) - np.exp(-x)) / (np.exp(x) + np.exp(-x)))
+        th = (np.longdouble(np.exp(x, dtype=np.longdouble) - np.exp(-x, dtype=np.longdouble)) / (np.exp(x, dtype=np.longdouble) + np.exp(-x, dtype=np.longdouble)))
         return th
     
     if activationFunctionType == activationFunction.BINARY:
-        return 1 if (1 / (1 + np.exp(-x)) > 0.5) else 0
+        return 1 if (1 / (1 + np.exp(-x, dtype=np.longdouble)) > 0.5) else 0
 
 @njit
-def activationFunctionFromEnumNoPythonCompatibility(x: np.longdouble, activationFunctionTypeId: int) -> float:
+def activationFunctionFromEnumNoPythonCompatibility(x: np.longdouble, activationFunctionTypeId: np.int64) -> float:
     if activationFunctionTypeId == 1:
         return np.longdouble(1 / (1 + np.exp(-x)))
     
@@ -41,15 +33,17 @@ def activationFunctionFromEnumNoPythonCompatibility(x: np.longdouble, activation
     if activationFunctionTypeId == 3:
         return 1 if (1 / (1 + np.exp(-x)) > 0.5) else 0
 
-@njit
-def ff_calculator(inputs: list, weights: list, activationFunctionTypeId: int):
+def ff_calculator(inputs: list, weights: list, activationFunctionType: activationFunction, linuxComp: bool):
     result = np.dot(inputs, weights)
-    result = activationFunctionFromEnumNoPythonCompatibility(result, activationFunctionTypeId)
+    if not linuxComp:
+        result = activationFunctionFromEnumNoPythonCompatibility(result, activationFunctionType.value)
+    else:
+        result = activationFunctionFromEnum(result, activationFunctionType)
 
     return result
 
 @njit
-def bp_calculator(input: list, activationFunctionTypeId: int, error: float, alpha: float):
+def bp_calculator(input: list, activationFunctionTypeId: np.int64, error: np.float64, alpha: np.float64):
     return activationFunctionFromEnumNoPythonCompatibility(input, activationFunctionTypeId) * error * alpha
 
 class CustomEncoder(json.JSONEncoder):
@@ -61,43 +55,42 @@ class CustomEncoder(json.JSONEncoder):
         return super().default(obj)
 
 class unit():
-    def __init__(self, inputSize: int, activationFunctionType: activationFunction, **kwargs) -> None:
+    def __init__(self, inputSize: int, activationFunctionType: activationFunction, linuxComp: bool, **kwargs) -> None:
         if not 'fromDict' in kwargs:
             self.weights = [uniform(-1,1) for _ in range(inputSize)]
         else:
             #print(np.longdouble(kwargs["fromDict"]["weight"]))
             self.weights = ([np.longdouble(wh) for wh in kwargs["fromDict"]["weight"]])
+
+        self.linuxComp = linuxComp
+
         self.activationFunctionType = activationFunctionType
         self.inputs = []
         self.output = 0
     def run(self, inputs: tuple) -> float:
         self.inputs = inputs
-        if not inp:
-            result = ff_calculator(inputs, self.weights, self.activationFunctionType.value)
-        else:
-            result = np.dot(inputs, self.weights)
-            result = activationFunctionFromEnum(result, self.activationFunctionType)
+        result = ff_calculator(inputs, self.weights, self.activationFunctionType, self.linuxComp)
         return result
 
     def fit(self, error: np.float64, alpha: np.float64):
-        for i in range(len(self.weights)):
-            if not inp:
+        if not self.linuxComp:
+            for i in range(len(self.weights)):
                 self.weights[i] += bp_calculator(self.inputs[i], self.activationFunctionType.value, error, alpha)
-            else:
+        else:
+            for i in range(len(self.weights)):
                 self.weights[i] += activationFunctionFromEnum(self.inputs[i], self.activationFunctionType) * error * alpha
-
 
     '''def setInputSize(self, inputSize: int):
         self.inp'''
 
 
 class layer():
-    def __init__(self, inputSize: int, layerSize: int, activationFunctionType: activationFunction, **kwargs) -> None:
+    def __init__(self, inputSize: int, layerSize: int, activationFunctionType: activationFunction, linuxComp: bool, **kwargs) -> None:
         if not 'fromDict' in kwargs:
-            self.units = [unit(inputSize=inputSize, activationFunctionType=activationFunctionType) for _ in range(layerSize)]
+            self.units = [unit(inputSize=inputSize, activationFunctionType=activationFunctionType, linuxComp=linuxComp) for _ in range(layerSize)]
             self.activationFunctionType = activationFunctionType
         else:
-            self.units = [unit(inputSize=inputSize, activationFunctionType=activationFunction(activationFunctionType), fromDict=kwargs['fromDict']['neurons'][_]) for _ in range(layerSize)]
+            self.units = [unit(inputSize=inputSize, activationFunctionType=activationFunction(activationFunctionType), fromDict=kwargs['fromDict']['neurons'][_], linuxComp=linuxComp) for _ in range(layerSize)]
             self.activationFunctionType = activationFunction(activationFunctionType)
     def fit(self, error: float, alpha: float):
         for unit in self.units:
@@ -111,14 +104,15 @@ class layer():
         return len(self.units)
 
 class NeuralNetwork():
-    def __init__(self, initialInputSize: int) -> None:
+    def __init__(self, initialInputSize: int, linuxComp: bool) -> None:
         self.initialInputSize = initialInputSize
         self.layers = []
+        self.linuxComp = linuxComp
     def addLayer(self, layerSize: int, layerType: activationFunction, **kwargs) -> None:
         if not 'fromDict' in kwargs:
-            self.layers.append(layer(self.initialInputSize if len(self.layers) == 0 else self.layers[-1]._get_units_len_(), layerSize, layerType))
+            self.layers.append(layer(self.initialInputSize if len(self.layers) == 0 else self.layers[-1]._get_units_len_(), layerSize, layerType, self.linuxComp))
         else:
-            self.layers.append(layer(self.initialInputSize if len(self.layers) == 0 else self.layers[-1]._get_units_len_(), kwargs["fromDict"]["layerSize"], kwargs["fromDict"]["layerType"], fromDict=kwargs["fromDict"]))
+            self.layers.append(layer(self.initialInputSize if len(self.layers) == 0 else self.layers[-1]._get_units_len_(), kwargs["fromDict"]["layerSize"], kwargs["fromDict"]["layerType"], self.linuxComp,fromDict=kwargs["fromDict"]))
         
     def fit(self, error: float, alpha: float):
         for layer in self.layers:
