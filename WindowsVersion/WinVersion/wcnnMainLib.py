@@ -4,6 +4,7 @@ import json
 import ctypes
 from math import gcd
 from random import randint
+import hashlib
 
 def bp_algorithm(cond: bool, out: float):
     return (1 if cond else 0) - out
@@ -43,14 +44,13 @@ def mdi(x):
             return div
 
 def decode_str(str_: str):
-    out = np.long(0)
+    '''out = np.long(0)
     for wrd in str_:
-        for chr in wrd:
-            chr_ord = ord(chr)
-            out = (out + int(chr_ord))
+        chr_ord = str(ord(wrd))
+        out *= 10 * (len(chr_ord) + 1)
+        out += int(chr_ord)
 
-    out_mdi = mdi(out)
+    out_mdi = np.long(mdi(out))
 
-    out /= out_mdi
-
-    return out, out_mdi
+    out /= out_mdi'''
+    return int(hashlib.md5(unidecode.unidecode(str_).encode()).hexdigest(), )

@@ -98,10 +98,15 @@
 
     {"phrase": "A coisa tá preta", "isBad": true},
     {"phrase": "Mercado negro", "isBad": true},
-    {"phrase": "Mercado negro", "isBad": true},
     {"phrase": "Nasceu com um pé na cozinha", "isBad": true},
     {"phrase": "Neguinho é muito folgado", "isBad": true},
     {"phrase": "Negros são os mais racistas com eles mesmos", "isBad": true},
-    {"phrase": "Você é da cor do pecado", "isBad": true}
+    {"phrase": "Você é da cor do pecado", "isBad": true},
+
+    {"phrase": "nego", "isBad": true},
+    {"phrase": "cê é gay", "isBad": true},
+    {"phrase": "macaco", "isBad": true},
+    {"phrase": "vão se fuder pobres", "isBad": true},
+    {"phrase": "seus nego lixo", "isBad": true}
     ]
 }
