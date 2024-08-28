@@ -21,7 +21,7 @@ def run_network(points, lrid, times, add_layers, canPrint, linuxComp):
         lrid.value += 1
         results = []
 
-        CONNECT_ANN = cn.NeuralNetwork(1, linuxComp)
+        CONNECT_ANN = cn.NeuralNetwork(2, linuxComp)
 
         def buildNetwork():
             CONNECT_ANN.addLayer(360, cn.activationFunction.SIGMOID)
@@ -41,7 +41,7 @@ def run_network(points, lrid, times, add_layers, canPrint, linuxComp):
             phrase, bad, id = select_random_train_data(train_data)
             #points[pointsId].append(i)
             decoded_phrase = ff_algorithm(phrase)
-            out = round(CONNECT_ANN.run([decoded_phrase])[0], 3)
+            out = round(CONNECT_ANN.run([decoded_phrase, 0])[0], 3)
 
             correct = (out > 0.5) == bad
 
