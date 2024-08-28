@@ -2,8 +2,11 @@ import numpy as np
 from random import uniform
 from enum import Enum
 from numba import njit
+import warnings
 import json
 #from numpyencoder import NumpyEncoder
+
+warnings.filterwarnings('ignore')
 
 class activationFunction(Enum):
     SIGMOID = 1
@@ -12,14 +15,14 @@ class activationFunction(Enum):
 
 def activationFunctionFromEnum(x: np.longdouble, activationFunctionType: activationFunction) -> float:
     if activationFunctionType == activationFunction.SIGMOID:
-        return np.longdouble(1 / (1 + np.exp(-x, dtype=np.longdouble)))
+        return np.longdouble(1 / (1 + np.exp(-x)))
     
     if activationFunctionType == activationFunction.TANH:
-        th = (np.longdouble(np.exp(x, dtype=np.longdouble) - np.exp(-x, dtype=np.longdouble)) / (np.exp(x, dtype=np.longdouble) + np.exp(-x, dtype=np.longdouble)))
+        th = (np.longdouble(np.exp(x) - np.exp(-x)) / (np.exp(x) + np.exp(-x)))
         return th
     
     if activationFunctionType == activationFunction.BINARY:
-        return 1 if (1 / (1 + np.exp(-x, dtype=np.longdouble)) > 0.5) else 0
+        return 1 if (1 / (1 + np.exp(-x)) > 0.5) else 0
 
 @njit
 def activationFunctionFromEnumNoPythonCompatibility(x: np.longdouble, activationFunctionTypeId: np.int64) -> float:

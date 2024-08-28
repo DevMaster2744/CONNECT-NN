@@ -10,8 +10,8 @@ def bp_algorithm(cond: bool, out: float):
     return (1 if cond else 0) - out
 
 def ff_algorithm(phrase: str):
-    decoded, dec_gcd = decode_str(phrase)
-    return np.longdouble(decoded / ((len(str(decoded)) * 10) - 1)), dec_gcd
+    decoded = decode_str(phrase)
+    return np.longdouble(decoded / ((len(str(decoded)) * 10) - 1))
 
 ES_CONTINUOUS = 0x80000000
 ES_SYSTEM_REQUIRED = 0x00000001
@@ -53,4 +53,4 @@ def decode_str(str_: str):
     out_mdi = np.long(mdi(out))
 
     out /= out_mdi'''
-    return int(hashlib.md5(unidecode.unidecode(str_).encode()).hexdigest(), )
+    return int(hashlib.md5(unidecode.unidecode(str_).encode("ASCII")).hexdigest(), 16)
