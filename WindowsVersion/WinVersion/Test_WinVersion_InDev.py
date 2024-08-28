@@ -123,7 +123,7 @@ if __name__ == "__main__":
                 print(f"// ANN {i} RESULT: {averages[i]['average']} //")
             
             #return averages[-1]["ann_results"]
-            print(f"// FINAL RESULT: {averages[-1]['average']} //")
+            print(f"// FINAL RESULT: {averages[-1]['average']} ~= {int((averages[-1]['average'] / inp_times) * 100)}% //")
             averages[-1]["ann"].saveAsJson("best_nn.json")
         
     print("AddLayers? - TYPE Y OR N")
