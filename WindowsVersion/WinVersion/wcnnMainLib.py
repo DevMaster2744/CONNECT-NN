@@ -53,4 +53,4 @@ def decode_str(str_: str):
     out_mdi = np.long(mdi(out))
 
     out /= out_mdi'''
-    return int(hashlib.md5(unidecode.unidecode(str_).encode("ASCII")).hexdigest(), 16)
+    return int(hashlib.sha256(unidecode.unidecode(str_.replace(' ', '')).encode()).hexdigest(), 16)
