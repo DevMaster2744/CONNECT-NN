@@ -2,12 +2,15 @@ import unidecode
 import numpy as np
 import json
 import ctypes
-from math import gcd
+from math import log
 from random import randint
 import hashlib
 
+def cross_entropy(p, q):
+    return -p * log(q + 1e-1)
+
 def bp_algorithm(cond: bool, out: float):
-    return (1 if cond else 0) - out
+    return cross_entropy(0.35 if cond else 0.65, out)
 
 def ff_algorithm(phrase: str):
     decoded = decode_str(phrase)
