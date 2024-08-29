@@ -10,7 +10,7 @@ warnings.filterwarnings('ignore')
 
 class activationFunction(Enum):
     SIGMOID = 1
-    BINARY = 2
+    RELU = 2
     TANH = 3
 
 def activationFunctionFromEnum(x: np.longdouble, activationFunctionType: activationFunction) -> float:
@@ -21,8 +21,9 @@ def activationFunctionFromEnum(x: np.longdouble, activationFunctionType: activat
         th = (np.longdouble(np.exp(x) - np.exp(-x)) / (np.exp(x) + np.exp(-x)))
         return th
     
-    if activationFunctionType == activationFunction.BINARY:
-        return 1 if (1 / (1 + np.exp(-x)) > 0.5) else 0
+    if activationFunctionType == activationFunction.RELU:
+        relu_max = np.max(0, x)
+        return relu_max if relu_max <= 1 else 1
 
 @njit
 def activationFunctionFromEnumNoPythonCompatibility(x: np.longdouble, activationFunctionTypeId: np.int64) -> float:

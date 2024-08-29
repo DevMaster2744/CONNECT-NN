@@ -6,11 +6,18 @@ from math import log
 from random import randint
 import hashlib
 
-def cross_entropy(p, q):
-    return -p * log(q + 1e-1)
+def cross_entropy(true, pred):
+    redundancy = 1e-15
 
-def bp_algorithm(cond: bool, out: float):
-    return cross_entropy(0.35 if cond else 0.65, out)
+    if pred > 1 - redundancy:
+        pred = 1 - redundancy
+    elif pred < redundancy:
+        pred = redundancy
+
+    return -(true * log(pred) + (1 - true) * log(1 - pred))
+
+def bp_algorithm(true: float, out: float):
+    return cross_entropy(true, out)
 
 def ff_algorithm(phrase: str):
     decoded = decode_str(phrase)
