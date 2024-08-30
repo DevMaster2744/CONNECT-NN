@@ -10,9 +10,15 @@ def cross_entropy(true: np.float64, pred: np.float64):
     redundancy = 1e-15
 
     pred += redundancy
-    #print(np.add(np.multiply(true, np.log(pred)), np.multiply(1 - true, np.log(1 - pred))))
-    #print(f"YAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAU? {np.log((1 - pred) if (1 - pred) > 0 else redundancy)}")
-    return np.add(np.multiply(true if true > 0 else redundancy, np.log(pred if pred > 0 else redundancy)), np.multiply((1 - true) if (1 - true) > 0 else (1 - redundancy), np.log((1 - pred) if (1 - pred) > 0 else (1 - redundancy))))
+
+    true = true if true > 0 else redundancy
+    pred = pred if pred > 0 else redundancy
+    '''
+    true1 = (1 - true) if (1 - true) > 0 else (1 - redundancy)
+    pred1 = (1 - pred) if (1 - pred) > 0 else (1 - redundancy)
+    '''
+    #return np.add(np.multiply(true, np.log(pred)), np.multiply(true1, np.log(pred1)))
+    return -np.multiply(true, np.log(pred))
 
 def bp_algorithm(true: np.longdouble, out: float):
     return cross_entropy(true, out)
