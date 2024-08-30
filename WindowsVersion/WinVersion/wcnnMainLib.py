@@ -6,17 +6,14 @@ from math import log
 from random import randint
 import hashlib
 
-def cross_entropy(true, pred):
+def cross_entropy(true: np.longdouble, pred: np.float64):
     redundancy = 1e-15
 
-    if pred > 1 - redundancy:
-        pred = 1 - redundancy
-    elif pred < redundancy:
-        pred = redundancy
+    pred += redundancy
+    print(np.add(np.multiply(true, np.log(pred)), np.multiply(1 - true, np.log(1 - pred))))
+    return -np.add(np.multiply(true, np.log(pred)), np.multiply(1 - true, np.log((1 - pred) if (1 - pred) > 0 else redundancy)))
 
-    return -(true * log(pred) + (1 - true) * log(1 - pred))
-
-def bp_algorithm(true: float, out: float):
+def bp_algorithm(true: np.longdouble, out: float):
     return cross_entropy(true, out)
 
 def ff_algorithm(phrase: str):

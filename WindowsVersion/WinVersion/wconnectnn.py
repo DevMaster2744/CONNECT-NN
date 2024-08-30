@@ -23,7 +23,8 @@ def activationFunctionFromEnum(x: np.longdouble, activationFunctionType: activat
     
     if activationFunctionType == activationFunction.RELU:
         relu_max = np.max(0, x)
-        return relu_max if relu_max <= 1 else 1
+        #return relu_max if relu_max <= 1 else 1
+        return relu_max
 
 @njit
 def activationFunctionFromEnumNoPythonCompatibility(x: np.longdouble, activationFunctionTypeId: np.int64) -> float:
