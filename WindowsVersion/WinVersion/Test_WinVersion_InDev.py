@@ -26,8 +26,8 @@ def run_network(points, lrid, times, add_layers, canPrint, linuxComp):
         def buildNetwork():
             CONNECT_ANN.addLayer(360, cn.activationFunction.SIGMOID)
             CONNECT_ANN.addLayer(75,  cn.activationFunction.TANH)
-            CONNECT_ANN.addLayer(15, cn.activationFunction.RELU)
-            CONNECT_ANN.addLayer(1, cn.activationFunction.RELU)
+            CONNECT_ANN.addLayer(15, cn.activationFunction.TANH)
+            CONNECT_ANN.addLayer(1, cn.activationFunction.TANH)
 
         if add_layers:
             buildNetwork()
@@ -47,7 +47,7 @@ def run_network(points, lrid, times, add_layers, canPrint, linuxComp):
 
             if not correct:
                 #CONNECT_ANN.fit(1, 0.1)
-                CONNECT_ANN.fit(bp_algorithm(1 if bad else 0, out), 0.1)
+                CONNECT_ANN.fit(bp_algorithm(2 if bad else -2, out), 0.01)
 
             result = 1 if correct else 0
 
