@@ -25,7 +25,7 @@ def bp_algorithm(true: np.longdouble, out: float):
 
 def ff_algorithm(phrase: str):
     decoded = decode_str(phrase)
-    return np.longdouble(decoded / ((len(str(decoded)) * 10) - 1))
+    return decoded
 
 ES_CONTINUOUS = 0x80000000
 ES_SYSTEM_REQUIRED = 0x00000001
@@ -67,4 +67,4 @@ def decode_str(str_: str):
     out_mdi = np.long(mdi(out))
 
     out /= out_mdi'''
-    return int(hashlib.sha256(unidecode.unidecode(str_.replace(' ', '')).encode()).hexdigest(), 16)
+    return np.longlong(hashlib.sha256(unidecode.unidecode(str_.replace(' ', '')).encode()).hexdigest())

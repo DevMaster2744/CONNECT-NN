@@ -24,7 +24,7 @@ def run_network(points, lrid, times, add_layers, canPrint, linuxComp):
         CONNECT_ANN = cn.NeuralNetwork(2, linuxComp)
 
         def buildNetwork():
-            CONNECT_ANN.addLayer(360, cn.activationFunction.SIGMOID)
+            CONNECT_ANN.addLayer(360, cn.activationFunction.TANH)
             CONNECT_ANN.addLayer(75,  cn.activationFunction.TANH)
             CONNECT_ANN.addLayer(15, cn.activationFunction.TANH)
             CONNECT_ANN.addLayer(1, cn.activationFunction.TANH)
@@ -41,20 +41,20 @@ def run_network(points, lrid, times, add_layers, canPrint, linuxComp):
             phrase, bad, id = select_random_train_data(train_data)
             #points[pointsId].append(i)
             decoded_phrase = ff_algorithm(phrase)
-            out = round(CONNECT_ANN.run([decoded_phrase, 0])[0], 3)
+            out = CONNECT_ANN.run([decoded_phrase, 0])[0]
 
             correct = (out > 0) == bad
 
-            if not correct:
+            #if not correct:
                 #CONNECT_ANN.fit(1, 0.1)
-                CONNECT_ANN.fit((1 if bad else -1) - out, 0.025)
+            CONNECT_ANN.fit((2 if bad else -2) - out, 1)
 
             result = 1 if correct else 0
 
             results.append((result + results[-1]) if len(results) > 0 else 0)
             percentage = int((i / times) * 100)
             if canPrint:
-                print(f"\r{percentage}% |{'█' * percentage + '-' * (100 - percentage)}| - OUT: {out}", end="\r")
+                print(f"\r{percentage}% |{'█' * percentage + '-' * (100 - percentage)}| - OUT: {out} {decoded_phrase}", end="\r")
 
         #pts_preset = points["results"]
         #pts_preset.append({"ann_results": results, "cann": CONNECT_ANN})
