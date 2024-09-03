@@ -27,7 +27,7 @@ def run_network(points, lrid, times, add_layers, canPrint, linuxComp):
             CONNECT_ANN.addLayer(360, cn.activationFunction.SIGMOID)
             CONNECT_ANN.addLayer(75,  cn.activationFunction.TANH)
             CONNECT_ANN.addLayer(15, cn.activationFunction.TANH)
-            CONNECT_ANN.addLayer(1, cn.activationFunction.SIGMOID)
+            CONNECT_ANN.addLayer(1, cn.activationFunction.TANH)
 
         if add_layers:
             buildNetwork()
@@ -43,11 +43,11 @@ def run_network(points, lrid, times, add_layers, canPrint, linuxComp):
             decoded_phrase = ff_algorithm(phrase)
             out = round(CONNECT_ANN.run([decoded_phrase, 0])[0], 3)
 
-            correct = (out > 0.5) == bad
+            correct = (out > 0) == bad
 
             if not correct:
                 #CONNECT_ANN.fit(1, 0.1)
-                CONNECT_ANN.fit((1 if bad else 0) - out, 0.025)
+                CONNECT_ANN.fit((1 if bad else -1) - out, 0.025)
 
             result = 1 if correct else 0
 
