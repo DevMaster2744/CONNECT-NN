@@ -80,10 +80,10 @@ class unit():
     def fit(self, error: np.float64, alpha: np.float64):
         if not self.linuxComp:
             for i in range(len(self.weights)):
-                self.weights[i] += bp_calculator(self.inputs[i], self.activationFunctionType.value, error, alpha)
+                self.weights[i] -= bp_calculator(self.inputs[i], self.activationFunctionType.value, error, alpha)
         else:
             for i in range(len(self.weights)):
-                self.weights[i] += activationFunctionFromEnum(self.inputs[i], self.activationFunctionType) * error * alpha
+                self.weights[i] -= activationFunctionFromEnum(self.inputs[i], self.activationFunctionType) * error * alpha
 
     '''def setInputSize(self, inputSize: int):
         self.inp'''
