@@ -5,6 +5,7 @@ import ctypes
 from math import log
 from random import randint
 import hashlib
+from ast import literal_eval
 
 def cross_entropy(true: np.float64, pred: np.float64):
     redundancy = 1e-15
@@ -67,4 +68,8 @@ def decode_str(str_: str):
     out_mdi = np.long(mdi(out))
 
     out /= out_mdi'''
-    return np.longlong(hashlib.sha256(unidecode.unidecode(str_.replace(' ', '')).encode()).hexdigest())
+    hexadecimal = hashlib.sha256(unidecode.unidecode(str_.replace(' ', '')).encode(), usedforsecurity=False).hexdigest()
+    splited_hex = hexadecimal.split(' ')
+    out_list = np.array(literal_eval(hex_v) for hex_v in splited_hex)
+    #print(value)
+    return out_list

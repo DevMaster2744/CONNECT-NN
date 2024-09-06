@@ -39,11 +39,11 @@ def activationFunctionFromEnumNoPythonCompatibility(x: np.longdouble, activation
         return 1 if (1 / (1 + np.exp(-x)) > 0.5) else 0
 
 def ff_calculator(inputs: list, weights: list, activationFunctionType: activationFunction, linuxComp: bool):
-    result = np.dot(inputs, weights)
+    results = [np.dot(inp, [weights[i] for _ in range(len(weights[i]))]) for i, inp in enumerate(inputs)]
     if not linuxComp:
-        result = activationFunctionFromEnumNoPythonCompatibility(result, activationFunctionType.value)
+        result = activationFunctionFromEnumNoPythonCompatibility(results, activationFunctionType.value)
     else:
-        result = activationFunctionFromEnum(result, activationFunctionType)
+        result = activationFunctionFromEnum(results, activationFunctionType)
 
     return result
 
