@@ -1,3 +1,4 @@
+'''
 import multiprocessing
 import json
 import multiprocessing
@@ -138,3 +139,49 @@ if __name__ == "__main__":
     
     for gen in range((gens - 2) if alinp.lower() == "y" else (gens - 1)):
         generation(False)
+'''
+from random import randint as random
+import numpy as np
+import keras
+from keras.models import Sequential
+from keras.layers import Dense
+from keras.optimizers import Adam
+from tensorflow.keras.preprocessing.text import Tokenizer
+from wcnnMainLib import select_random_train_data, getRspDataTables
+
+phrases, Isbad = getRspDataTables()
+
+tokenizer = Tokenizer(num_words=50)  # num_words sets the max number of words to keep
+tokenizer.fit_on_texts(phrases)
+
+sequences = tokenizer.texts_to_sequences(phrases)
+
+class ReinforcedANN:
+    def __init__(self, input_dim, output_dim, learning_rate=0.01):
+        self.model = self.build_model(input_dim, output_dim, learning_rate)
+
+    def build_model(self, input_dim, output_dim, learning_rate):
+        model = Sequential()
+        model.add(Dense(24, input_dim=input_dim, activation='relu'))
+        model.add(Dense(24, activation='relu'))
+        model.add(Dense(output_dim, activation='sigmoid'))
+        model.compile(optimizer=Adam(learning_rate=learning_rate), loss='binary_crossentropy', metrics=['accuracy'])
+        return model
+
+    def train(self, x_train, y_train, epochs=10):
+        self.model.fit(x_train, y_train, epochs=epochs, verbose=1)
+
+    def predict(self, state):
+        pred = self.model.predict(state)
+        return (pred > 0.5).astype(int)
+
+# Example usage:
+input_dim = 1  # Example input dimension
+output_dim = 1  # Binary output
+learning_rate = 0.001
+ann = ReinforcedANN(input_dim, output_dim, learning_rate)
+
+rand = random(0, (len(sequences) - 1))
+for _ in range(500):
+    ann.train(sequences[rand], Isbad[rand])
+    print(ann.predict(sequences[rand]))

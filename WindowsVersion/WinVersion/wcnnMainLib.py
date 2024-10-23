@@ -42,6 +42,18 @@ def read_train_data():
         data = json.load(f)
     return data
 
+def getRspDataTables():
+    with open("train_list.json") as f:
+        data_json = json.load(f)["phrases"] # Get the phrases from the data JSON
+
+    raw_phrases = []
+    raw_cond = []
+    for data in data_json:
+        raw_phrases.append(data["phrase"])
+        raw_cond.append(int(data["isBad"]))
+
+    return raw_phrases, raw_cond
+
 train_data = read_train_data()
 
 def select_random_train_data(_train_data):
