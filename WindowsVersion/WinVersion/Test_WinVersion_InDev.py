@@ -5,20 +5,13 @@ from keras.optimizers import Adam
 from tensorflow.keras.preprocessing.text import Tokenizer
 import wcnnMainLib
 import random
-from tokenizers import Tokenizer
-
-tokenizer = Tokenizer.from_pretrained("bert-base-cased")
-
-tokenizer.
+from transformers import BertTokenizer
 
 # Sample data for text processing
 phrases, Isbad = wcnnMainLib.getRspDataTables()
 #Isbad = [1, 0, 1]  # Sample labels (1: bad, 0: good)
 
 # Tokenizer setup
-tokenizer = Tokenizer(num_words=50)
-tokenizer.fit_on_texts(phrases)
-sequences = tokenizer.texts_to_sequences(phrases)
 
 class ReinforcedANN:
     def __init__(self, input_dim, output_dim, learning_rate=0.01):
@@ -33,7 +26,7 @@ class ReinforcedANN:
         model.compile(optimizer=Adam(learning_rate=learning_rate), loss='binary_crossentropy', metrics=['accuracy'])
         return model
 
-    def train(self, x_train, y_train, epochs=10):
+    def train(self, x_train, y_train, epochs=100):
         self.model.fit(x_train, y_train, epochs=epochs, verbose=1)
 
     def predict(self, state):
@@ -41,18 +34,18 @@ class ReinforcedANN:
         return (pred > 0.5).astype(int)
 
 # Example usage
-input_dim = 50  # Example input dimension should match tokenizer num_words
+input_dim = 1  # Example input dimension should match tokenizer num_words
 
 output_dim = 1  # Binary output
 learning_rate = 0.001
 ann = ReinforcedANN(input_dim, output_dim, learning_rate)
 
 # Correct training loop
-for _ in range(500):    
-    rand_idx = random.randint(0, len(sequences) - 1)
+for _ in range(20000):    
+    rand_idx = random.randint(0, len(phrases) - 1)
 
     bad = Isbad[rand_idx]
-    seq = sequences[rand_idx]
+    seq = wcnnMainLib.decode_str(phrases[rand_idx])
 
     for _ in range(50 - len(phrases[rand_idx].split(" "))):
         seq 
@@ -65,8 +58,4 @@ for _ in range(500):
 
 # Predictions for sample data
 
-print(f"SEQUENCES: {sequences}")
-
-for seq in sequences:
-    x_input = np.array([seq]).reshape(1, -1)
-    print(ann.predict(x_input))
+#print(f"SEQUENCES: {sequences}")

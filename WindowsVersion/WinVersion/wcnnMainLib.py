@@ -71,17 +71,11 @@ def mdi(x):
             return div
 
 def decode_str(str_: str):
-    '''out = np.long(0)
-    for wrd in str_:
-        chr_ord = str(ord(wrd))
-        out *= 10 * (len(chr_ord) + 1)
-        out += int(chr_ord)
+    out = np.longlong(0)
 
-    out_mdi = np.long(mdi(out))
+    for let in str_:
+        out += ord(let)
+        out *= 100 # adiciona um "0" ao final de cada letra
+    out *= 10 # Faz com que no fim das palaveras tenha um "00"
 
-    out /= out_mdi'''
-    hexadecimal = hashlib.sha256(unidecode.unidecode(str_.replace(' ', '')).encode(), usedforsecurity=False).hexdigest()
-    splited_hex = hexadecimal.split(' ')
-    out_list = np.array(literal_eval(hex_v) for hex_v in splited_hex)
-    #print(value)
-    return out_list
+    return out
