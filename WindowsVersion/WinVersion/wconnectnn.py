@@ -4,6 +4,8 @@ from enum import Enum
 from numba import njit
 import warnings
 import json
+import unidecode
+
 #from numpyencoder import NumpyEncoder
 
 warnings.filterwarnings('ignore')

@@ -26,7 +26,7 @@ class ReinforcedANN:
         model.compile(optimizer=Adam(learning_rate=learning_rate), loss='binary_crossentropy', metrics=['accuracy'])
         return model
 
-    def train(self, x_train, y_train, epochs=100):
+    def train(self, x_train, y_train, epochs=10):
         self.model.fit(x_train, y_train, epochs=epochs, verbose=1)
 
     def predict(self, state):
@@ -34,14 +34,14 @@ class ReinforcedANN:
         return (pred > 0.5).astype(int)
 
 # Example usage
-input_dim = 1  # Example input dimension should match tokenizer num_words
+input_dim = 50  # Example input dimension should match tokenizer num_words
 
 output_dim = 1  # Binary output
 learning_rate = 0.001
 ann = ReinforcedANN(input_dim, output_dim, learning_rate)
 
 # Correct training loop
-for _ in range(20000):    
+for _ in range(1000):    
     rand_idx = random.randint(0, len(phrases) - 1)
 
     bad = Isbad[rand_idx]
@@ -51,9 +51,9 @@ for _ in range(20000):
         seq 
 
 
-    x_train = np.array([seq]).reshape(1, -1)  # Ensure correct shape
+    x_train = np.array(seq, dtype=np.longlong).reshape(1, -1)  # Ensure correct shapes
     y_train = np.array([bad]).reshape(1, -1)
-    ann.train(x_train, y_train, epochs=1)
+    ann.train(x_train, y_train, epochs=250)
     print(ann.predict(x_train))
 
 # Predictions for sample data

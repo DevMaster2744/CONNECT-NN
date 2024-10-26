@@ -71,11 +71,14 @@ def mdi(x):
             return div
 
 def decode_str(str_: str):
-    out = np.longlong(0)
+    base_str = unidecode.unidecode_expect_ascii(str_)
+    print(base_str)
 
-    for let in str_:
-        out += ord(let)
-        out *= 100 # adiciona um "0" ao final de cada letra
-    out *= 10 # Faz com que no fim das palaveras tenha um "00"
+    out = np.array([0 for _ in range(50)])
+
+    for i, let in enumerate(base_str):
+        out[i] = {ord(let)}
 
     return out
+
+print(decode_str("ohcéus"))
