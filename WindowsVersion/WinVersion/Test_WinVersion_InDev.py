@@ -42,7 +42,7 @@ learning_rate = 0.001
 ann = ReinforcedANN(input_dim, output_dim, learning_rate)
 
 # Correct training loop
-for _ in range(500):    
+for _ in range(1000):    
     rand_idx = random.randint(0, len(phrases) - 1)
 
     bad = Isbad[rand_idx]
@@ -53,7 +53,7 @@ for _ in range(500):
 
     x_train = seq.reshape(1, -1)  # Ensure correct shapes
     y_train = np.array([bad]).reshape(1, -1)
-    ann.train(x_train, y_train, epochs=50)
+    ann.train(x_train, y_train, epochs=10)
 
 while True:
     sleep(0.1)
