@@ -5,6 +5,7 @@ from keras.optimizers import Adam
 from tensorflow.keras.preprocessing.text import Tokenizer
 import wcnnMainLib
 import random
+from time import sleep
 from transformers import BertTokenizer
 
 # Sample data for text processing
@@ -41,7 +42,7 @@ learning_rate = 0.001
 ann = ReinforcedANN(input_dim, output_dim, learning_rate)
 
 # Correct training loop
-for _ in range(1000):    
+for _ in range(500):    
     rand_idx = random.randint(0, len(phrases) - 1)
 
     bad = Isbad[rand_idx]
@@ -50,11 +51,15 @@ for _ in range(1000):
     for _ in range(50 - len(phrases[rand_idx].split(" "))):
         seq 
 
-
-    x_train = np.array(seq, dtype=np.longlong).reshape(1, -1)  # Ensure correct shapes
+    x_train = seq.reshape(1, -1)  # Ensure correct shapes
     y_train = np.array([bad]).reshape(1, -1)
-    ann.train(x_train, y_train, epochs=250)
-    print(ann.predict(x_train))
+    ann.train(x_train, y_train, epochs=50)
+
+while True:
+    sleep(0.1)
+    print("\nTell me a phrase!")
+    inp = input()
+    print(ann.predict(wcnnMainLib.decode_str(inp).reshape(1, -1)))
 
 # Predictions for sample data
 

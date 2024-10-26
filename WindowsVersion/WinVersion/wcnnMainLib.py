@@ -77,8 +77,6 @@ def decode_str(str_: str):
     out = np.array([0 for _ in range(50)])
 
     for i, let in enumerate(base_str):
-        out[i] = {ord(let)}
+        out[i] = ord(let)
 
     return out
-
-print(decode_str("ohcéus"))
