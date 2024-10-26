@@ -71,7 +71,7 @@ def mdi(x):
             return div
 
 def decode_str(str_: str):
-    base_str = unidecode.unidecode_expect_ascii(str_)
+    base_str = unidecode.unidecode_expect_ascii(str_).lower()
     print(base_str)
 
     out = np.array([0 for _ in range(50)])
