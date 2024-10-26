@@ -57,7 +57,7 @@ for _ in range(1000):
 
 while True:
     sleep(0.1)
-    print("\nTell me a phrase!")
+    print("\nTell me a word!")
     inp = input()
     print(ann.predict(wcnnMainLib.decode_str(inp).reshape(1, -1)))
 
