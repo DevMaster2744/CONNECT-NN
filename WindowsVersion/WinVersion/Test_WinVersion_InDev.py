@@ -27,11 +27,11 @@ class ReinforcedANN:
             model = load_model("connect.keras")
         else:
             model = Sequential()
-        model.add(Input(shape=(input_dim,)))
-        model.add(Dense(64, activation='relu'))
-        model.add(Dense(32, activation='relu'))
-        model.add(Dense(output_dim, activation='sigmoid'))
-        model.compile(optimizer=Adam(learning_rate=learning_rate), loss='binary_crossentropy', metrics=['accuracy'])
+            model.add(Input(shape=(input_dim,), name="input_layer"))
+            model.add(Dense(64, activation='relu', name='dense_01'))
+            model.add(Dense(32, activation='relu', name='dense_02'))
+            model.add(Dense(output_dim, activation='sigmoid', name='sigmoid_dense'))
+            model.compile(optimizer=Adam(learning_rate=learning_rate), loss='binary_crossentropy', metrics=['accuracy'])
         return model
 
     def train(self, x_train, y_train, epochs=10):

@@ -169,5 +169,8 @@ test.ipynb
 # data
 best_nn.json
 
-#config
+# Config
 config.toml
+
+# Save files
+connect.keras
