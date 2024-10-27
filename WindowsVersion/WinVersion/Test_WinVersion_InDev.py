@@ -7,6 +7,7 @@ import wcnnMainLib
 import random
 from time import sleep
 from transformers import BertTokenizer
+from tomllib import load as load_toml
 
 # Sample data for text processing
 phrases, Isbad = wcnnMainLib.getRspDataTables()
@@ -21,8 +22,8 @@ class ReinforcedANN:
     def build_model(self, input_dim, output_dim, learning_rate):
         model = Sequential()
         model.add(Input(shape=(input_dim,)))
-        model.add(Dense(24, activation='relu'))
-        model.add(Dense(24, activation='relu'))
+        model.add(Dense(64, activation='relu'))
+        model.add(Dense(32, activation='relu'))
         model.add(Dense(output_dim, activation='sigmoid'))
         model.compile(optimizer=Adam(learning_rate=learning_rate), loss='binary_crossentropy', metrics=['accuracy'])
         return model
@@ -42,7 +43,11 @@ learning_rate = 0.001
 ann = ReinforcedANN(input_dim, output_dim, learning_rate)
 
 # Correct training loop
-for _ in range(1000):    
+
+with open("config.toml", "rb") as fp:
+    config = load_toml(fp)
+
+for _ in range(config["times"]):    
     rand_idx = random.randint(0, len(phrases) - 1)
 
     bad = Isbad[rand_idx]
@@ -53,7 +58,7 @@ for _ in range(1000):
 
     x_train = seq.reshape(1, -1)  # Ensure correct shapes
     y_train = np.array([bad]).reshape(1, -1)
-    ann.train(x_train, y_train, epochs=10)
+    ann.train(x_train, y_train, epochs=config["epochs"])
 
 while True:
     sleep(0.1)

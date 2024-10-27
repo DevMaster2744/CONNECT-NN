@@ -168,3 +168,6 @@ test.ipynb
 
 # data
 best_nn.json
+
+#config
+config.toml
