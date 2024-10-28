@@ -9,9 +9,8 @@ from time import sleep
 from transformers import BertTokenizer
 from tomllib import load as load_toml
 
-# Sample data for text processing
+# Train data (from wcnnMainLib) -> Win CONNECT-NN MAIN LIBRARY 
 phrases, Isbad = wcnnMainLib.getRspDataTables()
-#Isbad = [1, 0, 1]  # Sample labels (1: bad, 0: good)
 
 # Tokenizer setup
 
@@ -44,13 +43,13 @@ class ReinforcedANN:
         self.model.save(sf)
 
 # Example usage
-input_dim = 50  # Example input dimension should match tokenizer num_words
+input_dim = 50 # Input list/array dimensions
 
-output_dim = 1  # Binary output
-learning_rate = 0.001
+output_dim = 1  # Output dimensions
+learning_rate = 0.005 #Learning rate multiplier
 ann = ReinforcedANN(input_dim, output_dim, learning_rate)
 
-# Correct training loop
+# Training
 
 for _ in range(config["times"]):    
     rand_idx = random.randint(0, len(phrases) - 1)
