@@ -10,6 +10,8 @@ from tomllib import load as load_toml
 # Train data (from wcnnMainLib) -> Win CONNECT-NN MAIN LIBRARY 
 phrases, Isbad = wcnnMainLib.getRspDataTables()
 
+print(f"Phrases: {phrases}")
+
 # Tokenizer setup
 
 with open("config.toml", "rb") as fp:
@@ -46,16 +48,17 @@ class ReinforcedANN:
 input_dim = 50  # Input list/array dimensions
 
 output_dim = 1  # Output dimensions
-learning_rate = 0.005  # Learning rate multiplier
+learning_rate = 0.01  # Learning rate multiplier
 ann = ReinforcedANN(input_dim, output_dim, learning_rate)
 
 # Training
 
 for _ in range(config["times"]):    
-    rand_idx = random.randint(0, len(phrases) - 1)
+    rand_idx = np.random.randint(0, len(phrases) - 1)
 
     bad = Isbad[rand_idx]
     seq = wcnnMainLib.decode_str(phrases[rand_idx])
+    #seq = wcnnMainLib.decode_str("legal")
 
     for _ in range(50 - len(phrases[rand_idx].split(" "))):
         seq 

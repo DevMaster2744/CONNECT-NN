@@ -1,7 +1,34 @@
 {
     "phrases": 
     [
-        {"phrase": "nego", "isBad": true},
+        {"phrase": "cu", "isBad": true},
+        {"phrase": "pu", "isBad": true},
+        {"phrase": "ne", "isBad": true},
+        {"phrase": "$lu", "isBad": true},
+        {"phrase": "blk", "isBad": true},
+        {"phrase": "ku", "isBad": true},
+        {"phrase": "lho", "isBad": true},
+        {"phrase": "ra|", "isBad": true},
+        {"phrase": "c4r", "isBad": true},
+        {"phrase": "cle", "isBad": true},
+        {"phrase": "m3u", "isBad": true},
+        {"phrase": "leq", "isBad": true},
+        {"phrase": "col", "isBad": true},
+
+        {"phrase": "r4|", "isBad": true},
+        {"phrase": "jyr", "isBad": true},
+        {"phrase": "cle", "isBad": true},
+        {"phrase": "k3u", "isBad": true},
+        {"phrase": "beq", "isBad": true},
+        {"phrase": "col", "isBad": true},
+
+        {"phrase": "b4s", "isBad": true},
+        {"phrase": "3ta", "isBad": true},
+        {"phrase": "ralho", "isBad": true},
+        {"phrase": "carlh", "isBad": true},
+
+        {"phrase": "ne", "isBad": true},
+        {"phrase": "clu", "isBad": true},
         {"phrase": "n3go", "isBad": true},
         {"phrase": "neg0", "isBad": true},
         {"phrase": "n3g0", "isBad": true},
