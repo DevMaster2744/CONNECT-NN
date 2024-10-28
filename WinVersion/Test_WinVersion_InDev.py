@@ -58,6 +58,7 @@ for _ in range(config["times"]):
 
     bad = Isbad[rand_idx]
     seq = wcnnMainLib.decode_str(phrases[rand_idx])
+    print(phrases[rand_idx])
     #seq = wcnnMainLib.decode_str("legal")
 
     '''for _ in range(50 - len(phrases[rand_idx].split(" "))):
