@@ -69,7 +69,7 @@ ann.save("connect.keras")
 
 while True:
     sleep(0.1)
-    print("\nTell me a word!")
+    print("\nChat filter:")
     inp = input()
     print(ann.predict(wcnnMainLib.decode_str(inp).reshape(1, -1)))
 
