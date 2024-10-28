@@ -48,7 +48,7 @@ class ReinforcedANN:
 input_dim = 50  # Input list/array dimensions
 
 output_dim = 1  # Output dimensions
-learning_rate = 0.01  # Learning rate multiplier
+learning_rate = 0.001  # Learning rate multiplier
 ann = ReinforcedANN(input_dim, output_dim, learning_rate)
 
 # Training
@@ -66,9 +66,11 @@ for _ in range(config["times"]):
     x_train = seq.reshape(1, -1)  # Ensure correct shapes
     y_train = np.array([bad]).reshape(1, -1)
     ann.train(x_train, y_train, epochs=config["epochs"])
-    
+
     if _ % 5 == 0:
         ann.save("connect.keras")
+
+ann.save("connect.keras")
 
 while True:
     sleep(0.1)
