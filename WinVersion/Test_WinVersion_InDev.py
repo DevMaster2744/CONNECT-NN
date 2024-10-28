@@ -60,14 +60,15 @@ for _ in range(config["times"]):
     seq = wcnnMainLib.decode_str(phrases[rand_idx])
     #seq = wcnnMainLib.decode_str("legal")
 
-    for _ in range(50 - len(phrases[rand_idx].split(" "))):
-        seq 
+    '''for _ in range(50 - len(phrases[rand_idx].split(" "))):
+        seq'''
 
     x_train = seq.reshape(1, -1)  # Ensure correct shapes
     y_train = np.array([bad]).reshape(1, -1)
     ann.train(x_train, y_train, epochs=config["epochs"])
-
-ann.save("connect.keras")
+    
+    if _ % 5 == 0:
+        ann.save("connect.keras")
 
 while True:
     sleep(0.1)
