@@ -2,11 +2,9 @@ import numpy as np
 from keras.models import Sequential, load_model
 from keras.layers import Dense, Input
 from keras.optimizers import Adam
-from tensorflow.keras.preprocessing.text import Tokenizer
 import wcnnMainLib
 import random
 from time import sleep
-from transformers import BertTokenizer
 from tomllib import load as load_toml
 
 # Train data (from wcnnMainLib) -> Win CONNECT-NN MAIN LIBRARY 
@@ -16,6 +14,7 @@ phrases, Isbad = wcnnMainLib.getRspDataTables()
 
 with open("config.toml", "rb") as fp:
     config = load_toml(fp)
+
 
 class ReinforcedANN:
     def __init__(self, input_dim, output_dim, learning_rate=0.01):
@@ -42,11 +41,12 @@ class ReinforcedANN:
     def save(self, sf: str):
         self.model.save(sf)
 
+
 # Example usage
-input_dim = 50 # Input list/array dimensions
+input_dim = 50  # Input list/array dimensions
 
 output_dim = 1  # Output dimensions
-learning_rate = 0.005 #Learning rate multiplier
+learning_rate = 0.005  # Learning rate multiplier
 ann = ReinforcedANN(input_dim, output_dim, learning_rate)
 
 # Training
@@ -74,4 +74,4 @@ while True:
 
 # Predictions for sample data
 
-#print(f"SEQUENCES: {sequences}")
+# print(f"SEQUENCES: {sequences}")
