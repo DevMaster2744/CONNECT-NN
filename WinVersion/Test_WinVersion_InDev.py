@@ -71,7 +71,7 @@ for _ in range(config["times"]):
     ann.train(x_train, y_train, epochs=config["epochs"])
     print(f"BAD: {bad}, ANN RESULT: {ann.predict(x_train)}")
 
-    if _ % 5 == 0:
+    if _ % 50 == 0:
         ann.save("connect.keras")
 
 ann.save("connect.keras")
