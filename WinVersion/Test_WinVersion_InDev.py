@@ -35,7 +35,7 @@ class ReinforcedANN:
         return model
 
     def train(self, x_train, y_train, epochs=10):
-        self.model.fit(x_train, y_train, epochs=epochs, verbose=1)
+        self.model.fit(x_train, y_train, epochs=epochs, verbose=0)
 
     def predict(self, state):
         pred = self.model.predict(state)
@@ -59,13 +59,15 @@ for _ in range(config["times"]):
     bad = Isbad[rand_idx]
     seq = wcnnMainLib.decode_str(phrases[rand_idx])
     print(phrases[rand_idx])
+    print(bad)
+    print(seq)
     #seq = wcnnMainLib.decode_str("legal")
 
     '''for _ in range(50 - len(phrases[rand_idx].split(" "))):
         seq'''
 
     x_train = seq.reshape(1, -1)  # Ensure correct shapes
-    y_train = np.array([bad]).reshape(1, -1)
+    y_train = np.array([1 if bad else 0]).reshape(1, -1)
     ann.train(x_train, y_train, epochs=config["epochs"])
 
     if _ % 5 == 0:
