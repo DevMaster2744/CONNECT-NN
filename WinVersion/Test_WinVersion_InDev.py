@@ -69,6 +69,7 @@ for _ in range(config["times"]):
     x_train = seq.reshape(1, -1)  # Ensure correct shapes
     y_train = np.array([1 if bad else 0]).reshape(1, -1)
     ann.train(x_train, y_train, epochs=config["epochs"])
+    print(f"BAD: {bad}, ANN RESULT: {ann.predict(x_train)}")
 
     if _ % 5 == 0:
         ann.save("connect.keras")
