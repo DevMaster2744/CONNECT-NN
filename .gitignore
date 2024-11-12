@@ -174,3 +174,6 @@ config.toml
 
 # Save files
 connect.keras
+
+# UI Files
+.tkUi.py
