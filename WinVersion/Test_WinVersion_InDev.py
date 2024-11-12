@@ -43,8 +43,6 @@ class ReinforcedANN:
     def save(self, sf: str):
         self.model.save(sf)
 
-
-# Example usage
 input_dim = 50  # Input list/array dimensions
 
 output_dim = 1  # Output dimensions
