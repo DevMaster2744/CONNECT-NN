@@ -2,10 +2,8 @@ import unidecode
 import numpy as np
 import json
 import ctypes
-from math import log
 from random import randint
 import hashlib
-from ast import literal_eval
 
 def cross_entropy(true: np.float64, pred: np.float64):
     redundancy = 1e-15

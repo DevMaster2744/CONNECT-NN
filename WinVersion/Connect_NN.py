@@ -43,13 +43,11 @@ class ReinforcedANN:
     def save(self, sf: str):
         self.model.save(sf)
 
-input_dim = 50  # Input list/array dimensions
+input_dim = 50
 
-output_dim = 1  # Output dimensions
-learning_rate = 0.001  # Learning rate multiplier
-ann = ReinforcedANN(input_dim, output_dim, learning_rate)
-
-# Training
+output_dim = 1
+learning_rate = 0.001
+ANN = ReinforcedANN(input_dim, output_dim, learning_rate)
 
 for _ in range(config["times"]):    
     rand_idx = np.random.randint(0, len(phrases) - 1)
@@ -66,20 +64,18 @@ for _ in range(config["times"]):
 
     x_train = seq.reshape(1, -1)  # Ensure correct shapes
     y_train = np.array([1 if bad else 0]).reshape(1, -1)
-    ann.train(x_train, y_train, epochs=config["epochs"])
-    print(f"BAD: {bad}, ANN RESULT: {ann.predict(x_train)}")
+    ANN.train(x_train, y_train, epochs=config["epochs"])
+    print(f"BAD: {bad}, ANN RESULT: {ANN.predict(x_train)}")
 
     if _ % 50 == 0:
-        ann.save("connect.keras")
+        ANN.save("connect.keras")
 
-ann.save("connect.keras")
+ANN.save("connect.keras")
 
 while True:
     sleep(0.1)
     print("\nChat filter:")
     inp = input()
-    print(ann.predict(wcnnMainLib.decode_str(inp).reshape(1, -1)))
-
-# Predictions for sample data
+    print(ANN.predict(wcnnMainLib.decode_str(inp).reshape(1, -1)))
 
 # print(f"SEQUENCES: {sequences}")
