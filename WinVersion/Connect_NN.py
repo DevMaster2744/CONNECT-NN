@@ -49,33 +49,34 @@ output_dim = 1
 learning_rate = 0.001
 ANN = ReinforcedANN(input_dim, output_dim, learning_rate)
 
-for _ in range(config["times"]):    
-    rand_idx = np.random.randint(0, len(phrases) - 1)
+def train():
+    for _ in range(config["times"]):    
+        rand_idx = np.random.randint(0, len(phrases) - 1)
 
-    bad = Isbad[rand_idx]
-    seq = wcnnMainLib.decode_str(phrases[rand_idx])
-    print(phrases[rand_idx])
-    print(bad)
-    print(seq)
-    #seq = wcnnMainLib.decode_str("legal")
+        bad = Isbad[rand_idx]
+        seq = wcnnMainLib.decode_str(phrases[rand_idx])
+        print(phrases[rand_idx])
+        print(bad)
+        print(seq)
+        #seq = wcnnMainLib.decode_str("legal")
 
-    '''for _ in range(50 - len(phrases[rand_idx].split(" "))):
-        seq'''
+        '''for _ in range(50 - len(phrases[rand_idx].split(" "))):
+            seq'''
 
-    x_train = seq.reshape(1, -1)  # Ensure correct shapes
-    y_train = np.array([1 if bad else 0]).reshape(1, -1)
-    ANN.train(x_train, y_train, epochs=config["epochs"])
-    print(f"BAD: {bad}, ANN RESULT: {ANN.predict(x_train)}")
+        x_train = seq.reshape(1, -1)  # Ensure correct shapes
+        y_train = np.array([1 if bad else 0]).reshape(1, -1)
+        ANN.train(x_train, y_train, epochs=config["epochs"])
+        print(f"BAD: {bad}, ANN RESULT: {ANN.predict(x_train)}")
 
-    if _ % 50 == 0:
-        ANN.save("connect.keras")
+        if _ % 50 == 0:
+            ANN.save("connect.keras")
 
-ANN.save("connect.keras")
+    ANN.save("connect.keras")
 
-while True:
-    sleep(0.1)
-    print("\nChat filter:")
-    inp = input()
-    print(ANN.predict(wcnnMainLib.decode_str(inp).reshape(1, -1)))
+    while True:
+        sleep(0.1)
+        print("\nChat filter:")
+        inp = input()
+        print(ANN.predict(wcnnMainLib.decode_str(inp).reshape(1, -1)))
 
-# print(f"SEQUENCES: {sequences}")
+    # print(f"SEQUENCES: {sequences}")

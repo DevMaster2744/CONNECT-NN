@@ -15,12 +15,11 @@ call :Verify_package tensorflow
 call :Verify_package keras
 call :Verify_package tkinter
 call :Verify_package unidecode
+call :Verify_package customtkinter
 
 echo REMEMBER to check the config.toml file!
 
-pause
-
-.\.venv\Scripts\python.exe .\WinVersion\Connect_NN.py
+.\.venv\Scripts\python.exe .\WinVersion\.tkUi.py
 
 EXIT /B %ERRORLEVEL%
 
