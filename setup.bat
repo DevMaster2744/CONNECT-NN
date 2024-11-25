@@ -19,7 +19,7 @@ call :Verify_package customtkinter
 
 echo REMEMBER to check the config.toml file!
 
-.\.venv\Scripts\python.exe .\WinVersion\.tkUi.py
+REM .\.venv\Scripts\python.exe .\WinVersion\.tkUi.py
 
 EXIT /B %ERRORLEVEL%
 

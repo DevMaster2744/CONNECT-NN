@@ -1,7 +1,12 @@
 #from tkinter import Tk, Button, Label, Entry
 from customtkinter import *
-#import Connect_NN as cn
-#import multiprocessing
+import Connect_NN as cn
+import os
+import subprocess as sp
+
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+
+#sp.call(['.\setup.bat'])
 
 '''
 r = Tk()
@@ -15,7 +20,13 @@ r.mainloop()
 
 def start():
     window.destroy()
-    #cn.train()
+    cn.train()
+
+def filter():
+    if entryBox.get() != "":
+        label.configure(text='Message blocked' if cn.talk(entryBox.get())[0][0] == 1 else f'You: {entryBox.get()}')
+    else:
+        label.configure("- Write something -")
 
 
 window = CTk()
@@ -29,7 +40,7 @@ train = CTkButton(tframe, text='Train', width=10, command=start)
 
 tsframe = CTkFrame(window, width=290, height=417)
 entryBox = CTkEntry(tsframe, placeholder_text="Enter your message here", width=200)
-talk = CTkButton(tsframe, text='Send', width=10, command=start)
+talk = CTkButton(tsframe, text='Send', width=10, command=filter)
 label = CTkLabel(tsframe, width=180, text="Send a message for me!")
 
 tframe.pack(padx=10, pady=5)

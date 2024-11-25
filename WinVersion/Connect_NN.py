@@ -72,7 +72,11 @@ def train():
             ANN.save("connect.keras")
 
     ANN.save("connect.keras")
-
+def talk(phrase: str):
+    pred = ANN.predict(wcnnMainLib.decode_str(phrase).reshape(1, -1))
+    print(pred[0])
+    return pred
+'''
     while True:
         sleep(0.1)
         print("\nChat filter:")
@@ -80,3 +84,4 @@ def train():
         print(ANN.predict(wcnnMainLib.decode_str(inp).reshape(1, -1)))
 
     # print(f"SEQUENCES: {sequences}")
+'''
